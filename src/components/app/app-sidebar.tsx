@@ -92,7 +92,7 @@ export default function AppSidebar() {
 
   return (
     <Sidebar collapsible="icon">
-      <SidebarHeader className="border-b border-sidebar-border p-4">
+      <SidebarHeader className="flex justify-center h-16 border-b border-sidebar-border ">
         <div className="flex items-center gap-2 group-data-[collapsible=icon]:justify-center">
           <div className="flex h-8 w-8 items-center justify-center bg-sidebar-primary rounded-full flex-shrink-0">
             <img src={Logo} alt="Fonzo Logo" className="rounded-full" />
