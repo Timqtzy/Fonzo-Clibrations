@@ -2,6 +2,7 @@ import './App.css'
 import React from 'react'
 import { Routes, Route, Navigate } from 'react-router-dom'
 import { useAuthChecker } from './hooks/useAuthChecker'
+import Landing from './pages/landing'
 import Login from './pages/login'
 import Dashboard from './pages/dashboard'
 import JobOrders from './pages/jobOrders'
@@ -32,6 +33,8 @@ function PublicRoute({ children }: { children: React.JSX.Element }) {
 function App() {
   return (
     <Routes>
+      {/* Public Landing Page */}
+      <Route path="/" element={<Landing />} />
       <Route
         path="/login"
         element={
@@ -121,7 +124,7 @@ function App() {
         }
       />
       {/* Default redirect */}
-      <Route path="*" element={<Navigate to="/login" />} />
+      <Route path="*" element={<Navigate to="/" />} />
     </Routes>
   );
 }

@@ -98,7 +98,7 @@ export default function AppSidebar() {
             <img src={Logo} alt="Fonzo Logo" className="rounded-full" />
           </div>
           <div className="flex flex-col group-data-[collapsible=icon]:hidden">
-            <span className="text-sm font-semibold">Fonzo Clibration</span>
+            <span className="text-sm font-semibold">Fonzo Calibration</span>
             <span className="text-xs text-sidebar-foreground/70">
               Dashboard
             </span>
