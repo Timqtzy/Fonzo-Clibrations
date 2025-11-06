@@ -1,113 +1,113 @@
-import { useState } from 'react';
-import { Settings, ShoppingCart, Clock, Home, Filter, Plus, Eye, Check, Trash2, ChevronDown, ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight } from "lucide-react";
+import { useState, useEffect } from 'react';
+import { Settings, ShoppingCart, Clock, Home, Filter, Plus, Eye, Pencil, Trash2, ChevronDown, ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight } from "lucide-react";
+import { inventoryApi, categoriesApi, activityLogsApi } from '@/services/api.service';
+import type { Database } from '@/types/database.types';
+import toast from 'react-hot-toast';
+import { InventoryFormModal } from '@/components/modals/InventoryFormModal';
+import { InventoryDetailsModal } from '@/components/modals/InventoryDetailsModal';
+import { DeleteConfirmationModal } from '@/components/modals/DeleteConfirmationModal';
 
-type InventoryItem = {
-  no: number;
-  partsName: string;
-  quantity: string;
-  minimumStock: string;
-  category: string;
-  supplier: string;
-  status: string;
+type InventoryItem = Database['public']['Tables']['inventory_items']['Row'] & {
+  categories?: { name: string } | null;
+  suppliers?: { supplier_name: string } | null;
 };
-
-const initialData: InventoryItem[] = [
-  {
-    no: 1,
-    partsName: "Brake Pad",
-    quantity: "12 pcs",
-    minimumStock: "5 stock",
-    category: "Engine",
-    supplier: "Autowork PH",
-    status: "Active",
-  },
-  {
-    no: 2,
-    partsName: "Brake Pad",
-    quantity: "12 pcs",
-    minimumStock: "5 stock",
-    category: "Engine",
-    supplier: "Autowork PH",
-    status: "Active",
-  },
-  {
-    no: 3,
-    partsName: "Brake Pad",
-    quantity: "12 pcs",
-    minimumStock: "5 stock",
-    category: "Engine",
-    supplier: "Autowork PH",
-    status: "Active",
-  },
-  {
-    no: 4,
-    partsName: "Brake Pad",
-    quantity: "12 pcs",
-    minimumStock: "5 stock",
-    category: "Engine",
-    supplier: "Autowork PH",
-    status: "Active",
-  },
-  {
-    no: 5,
-    partsName: "Brake Pad",
-    quantity: "12 pcs",
-    minimumStock: "5 stock",
-    category: "Engine",
-    supplier: "Autowork PH",
-    status: "Active",
-  },
-  {
-    no: 6,
-    partsName: "Brake Pad",
-    quantity: "12 pcs",
-    minimumStock: "5 stock",
-    category: "Engine",
-    supplier: "Autowork PH",
-    status: "Active",
-  },
-  {
-    no: 7,
-    partsName: "Brake Pad",
-    quantity: "12 pcs",
-    minimumStock: "5 stock",
-    category: "Engine",
-    supplier: "Autowork PH",
-    status: "Active",
-  },
-  {
-    no: 8,
-    partsName: "Brake Pad",
-    quantity: "12 pcs",
-    minimumStock: "5 stock",
-    category: "Engine",
-    supplier: "Autowork PH",
-    status: "Active",
-  },
-];
+type Category = Database['public']['Tables']['categories']['Row'];
 
 export default function InventorySupplies() {
-  const [data, setData] = useState<InventoryItem[]>(initialData);
+  const [data, setData] = useState<InventoryItem[]>([]);
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [itemsPerPage, setItemsPerPage] = useState(20);
   const [currentPage, setCurrentPage] = useState(1);
   const [selectedCategory, setSelectedCategory] = useState("All Categories");
   const [showCategoryDropdown, setShowCategoryDropdown] = useState(false);
 
-  const categories = ["All Categories", "Engine", "Transmission", "Brakes", "Suspension"];
+  // Modal states
+  const [showCreateModal, setShowCreateModal] = useState(false);
+  const [showDetailsModal, setShowDetailsModal] = useState(false);
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [selectedItem, setSelectedItem] = useState<InventoryItem | null>(null);
+  const [selectedItemId, setSelectedItemId] = useState<string | null>(null);
+  const [deleting, setDeleting] = useState(false);
+
+  useEffect(() => {
+    loadInventory();
+    loadCategories();
+  }, []);
+
+  const loadInventory = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      const items = await inventoryApi.getAll();
+      setData(items as InventoryItem[]);
+    } catch (err) {
+      const message = err instanceof Error ? err.message : 'Failed to load inventory';
+      setError(message);
+      toast.error(message);
+      console.error('Error loading inventory:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const loadCategories = async () => {
+    try {
+      const cats = await categoriesApi.getAll();
+      setCategories(cats as Category[]);
+    } catch (err) {
+      console.error('Error loading categories:', err);
+    }
+  };
 
   const filteredData = selectedCategory === "All Categories"
     ? data
-    : data.filter(item => item.category === selectedCategory);
+    : data.filter(item => item.categories?.name === selectedCategory);
 
   const totalPages = Math.ceil(filteredData.length / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
   const endIndex = startIndex + itemsPerPage;
   const currentData = filteredData.slice(startIndex, endIndex);
 
-  const handleDelete = (index: number) => {
-    const actualIndex = data.findIndex(item => item.no === filteredData[startIndex + index].no);
-    const newData = data.filter((_, i) => i !== actualIndex);
-    setData(newData);
+  const handleDeleteClick = (item: InventoryItem) => {
+    setSelectedItem(item);
+    setShowDeleteModal(true);
+  };
+
+  const handleDeleteConfirm = async () => {
+    if (!selectedItem) return;
+
+    setDeleting(true);
+    try {
+      await inventoryApi.delete(selectedItem.id);
+
+      // Log activity
+      try {
+        await activityLogsApi.log({
+          action: 'delete',
+          entity_type: 'inventory',
+          entity_id: selectedItem.id,
+          entity_name: selectedItem.parts_name,
+          description: `Deleted inventory item: ${selectedItem.parts_name}`,
+          old_values: selectedItem
+        });
+      } catch (logErr) {
+        console.error('Failed to log activity:', logErr);
+      }
+
+      toast.success('Item deleted successfully');
+      setShowDeleteModal(false);
+      setSelectedItem(null);
+      await loadInventory();
+    } catch (err) {
+      const message = err instanceof Error ? err.message : 'Failed to delete item';
+      toast.error(message);
+      console.error('Error deleting item:', err);
+    } finally {
+      setDeleting(false);
+    }
   };
 
   const handleCategorySelect = (category: string) => {
@@ -115,6 +115,37 @@ export default function InventorySupplies() {
     setCurrentPage(1);
     setShowCategoryDropdown(false);
   };
+
+  const handleView = (item: InventoryItem) => {
+    setSelectedItemId(item.id);
+    setShowDetailsModal(true);
+  };
+
+  const handleEdit = (item: InventoryItem) => {
+    setSelectedItem(item);
+    setShowEditModal(true);
+  };
+
+  const handleSuccess = () => {
+    loadInventory();
+    setSelectedItem(null);
+  };
+
+  if (loading) {
+    return (
+      <div className="w-full min-h-screen p-6 flex items-center justify-center">
+        <div className="text-lg">Loading inventory...</div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="w-full min-h-screen p-6 flex items-center justify-center">
+        <div className="text-red-600">Error: {error}</div>
+      </div>
+    );
+  }
 
   return (
     <div className="w-full min-h-screen p-6">
@@ -134,7 +165,7 @@ export default function InventorySupplies() {
             <div className="flex items-start justify-between">
               <div>
                 <p className="text-sm text-gray-600 mb-1">Total Parts</p>
-                <h2 className="text-3xl font-bold text-gray-900">1,260</h2>
+                <h2 className="text-3xl font-bold text-gray-900">{data.length}</h2>
               </div>
               <div className="flex gap-1">
                 <Settings className="h-6 w-6 text-gray-400" />
@@ -143,34 +174,40 @@ export default function InventorySupplies() {
             </div>
           </div>
 
-          {/* Stock Items */}
+          {/* Total Inventory Value */}
           <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
             <div className="flex items-start justify-between">
               <div>
-                <p className="text-sm text-gray-600 mb-1">Stock Items</p>
-                <h2 className="text-3xl font-bold text-gray-900">35</h2>
+                <p className="text-sm text-gray-600 mb-1">Total Inventory Value</p>
+                <h2 className="text-3xl font-bold text-green-600">
+                  ₱{data.reduce((sum, item) => sum + ((item.unit_price || 0) * item.quantity), 0).toLocaleString()}
+                </h2>
               </div>
-              <ShoppingCart className="h-6 w-6 text-gray-400" />
+              <ShoppingCart className="h-6 w-6 text-green-500" />
             </div>
           </div>
 
-          {/* Pending Orders */}
+          {/* Low Stock */}
           <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
             <div className="flex items-start justify-between">
               <div>
-                <p className="text-sm text-gray-600 mb-1">Pending Orders</p>
-                <h2 className="text-3xl font-bold text-gray-900">23</h2>
+                <p className="text-sm text-gray-600 mb-1">Low Stock</p>
+                <h2 className="text-3xl font-bold text-orange-600">
+                  {data.filter(item => item.quantity <= item.minimum_stock).length}
+                </h2>
               </div>
-              <Clock className="h-6 w-6 text-gray-400" />
+              <Clock className="h-6 w-6 text-orange-500" />
             </div>
           </div>
 
-          {/* Quantity Available */}
+          {/* Total Quantity */}
           <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
             <div className="flex items-start justify-between">
               <div>
                 <p className="text-sm text-gray-600 mb-1">Quantity Available</p>
-                <h2 className="text-3xl font-bold text-gray-900">2,500</h2>
+                <h2 className="text-3xl font-bold text-gray-900">
+                  {data.reduce((sum, item) => sum + item.quantity, 0)}
+                </h2>
               </div>
               <Home className="h-6 w-6 text-gray-400" />
             </div>
@@ -192,21 +229,32 @@ export default function InventorySupplies() {
               </button>
               {showCategoryDropdown && (
                 <div className="absolute top-full left-0 mt-1 w-48 bg-white border border-gray-300 rounded-md shadow-lg z-10">
+                  <button
+                    onClick={() => handleCategorySelect("All Categories")}
+                    className={`w-full text-left px-4 py-2 text-sm hover:bg-gray-100 transition-colors ${
+                      selectedCategory === "All Categories" ? 'bg-gray-50 font-medium' : ''
+                    }`}
+                  >
+                    All Categories
+                  </button>
                   {categories.map((category) => (
                     <button
-                      key={category}
-                      onClick={() => handleCategorySelect(category)}
+                      key={category.id}
+                      onClick={() => handleCategorySelect(category.name)}
                       className={`w-full text-left px-4 py-2 text-sm hover:bg-gray-100 transition-colors ${
-                        selectedCategory === category ? 'bg-gray-50 font-medium' : ''
+                        selectedCategory === category.name ? 'bg-gray-50 font-medium' : ''
                       }`}
                     >
-                      {category}
+                      {category.name}
                     </button>
                   ))}
                 </div>
               )}
             </div>
-            <button className="flex items-center gap-2 px-4 py-2 bg-gray-900 text-white rounded-md hover:bg-gray-800 transition-colors">
+            <button
+              onClick={() => setShowCreateModal(true)}
+              className="flex items-center gap-2 px-4 py-2 bg-gray-900 text-white rounded-md hover:bg-gray-800 transition-colors"
+            >
               <Plus className="h-4 w-4" />
               <span className="text-sm font-medium">Add</span>
             </button>
@@ -220,6 +268,8 @@ export default function InventorySupplies() {
                   <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700">No.</th>
                   <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700">Parts Name</th>
                   <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700">Quantity</th>
+                  <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700">Unit Price</th>
+                  <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700">Total Value</th>
                   <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700">Minimum Stock</th>
                   <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700">Category</th>
                   <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700">Supplier</th>
@@ -229,25 +279,40 @@ export default function InventorySupplies() {
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
                 {currentData.map((item, index) => (
-                  <tr key={index} className="hover:bg-gray-50 transition-colors">
-                    <td className="px-4 py-4 text-sm text-gray-900">{item.no}</td>
-                    <td className="px-4 py-4 text-sm text-gray-900">{item.partsName}</td>
-                    <td className="px-4 py-4 text-sm text-gray-900">{item.quantity}</td>
-                    <td className="px-4 py-4 text-sm text-gray-900">{item.minimumStock}</td>
-                    <td className="px-4 py-4 text-sm text-gray-900">{item.category}</td>
-                    <td className="px-4 py-4 text-sm text-gray-900">{item.supplier}</td>
+                  <tr key={item.id} className="hover:bg-gray-50 transition-colors">
+                    <td className="px-4 py-4 text-sm text-gray-900">{startIndex + index + 1}</td>
+                    <td className="px-4 py-4 text-sm text-gray-900">{item.parts_name}</td>
+                    <td className="px-4 py-4 text-sm text-gray-900">{item.quantity} {item.unit}</td>
+                    <td className="px-4 py-4 text-sm text-gray-900">
+                      ₱{(item.unit_price || 0).toLocaleString()}
+                    </td>
+                    <td className="px-4 py-4 text-sm font-semibold text-blue-600">
+                      ₱{((item.unit_price || 0) * item.quantity).toLocaleString()}
+                    </td>
+                    <td className="px-4 py-4 text-sm text-gray-900">{item.minimum_stock} stock</td>
+                    <td className="px-4 py-4 text-sm text-gray-900">{item.categories?.name || 'N/A'}</td>
+                    <td className="px-4 py-4 text-sm text-gray-900">{item.suppliers?.supplier_name || 'N/A'}</td>
                     <td className="px-4 py-4 text-sm text-gray-900">{item.status}</td>
                     <td className="px-4 py-4">
                       <div className="flex gap-2 justify-center">
-                        <button className="p-2 rounded bg-blue-100 hover:bg-blue-200 transition-colors">
+                        <button
+                          onClick={() => handleView(item)}
+                          className="p-2 rounded bg-blue-100 hover:bg-blue-200 transition-colors"
+                          title="View Details"
+                        >
                           <Eye className="h-4 w-4 text-blue-600" />
                         </button>
-                        <button className="p-2 rounded bg-green-100 hover:bg-green-200 transition-colors">
-                          <Check className="h-4 w-4 text-green-600" />
+                        <button
+                          onClick={() => handleEdit(item)}
+                          className="p-2 rounded bg-green-100 hover:bg-green-200 transition-colors"
+                          title="Edit Item"
+                        >
+                          <Pencil className="h-4 w-4 text-green-600" />
                         </button>
-                        <button 
-                          onClick={() => handleDelete(index)}
+                        <button
+                          onClick={() => handleDeleteClick(item)}
                           className="p-2 rounded bg-red-100 hover:bg-red-200 transition-colors"
+                          title="Delete Item"
                         >
                           <Trash2 className="h-4 w-4 text-red-600" />
                         </button>
@@ -292,7 +357,7 @@ export default function InventorySupplies() {
                 <ChevronLeft className="h-4 w-4" />
               </button>
               <span className="text-sm text-gray-700 px-2">
-                {currentPage} of {totalPages}
+                {currentPage} of {totalPages || 1}
               </span>
               <button
                 onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
@@ -311,6 +376,35 @@ export default function InventorySupplies() {
             </div>
           </div>
         </div>
+
+        {/* Modals */}
+        <InventoryFormModal
+          open={showCreateModal}
+          onOpenChange={setShowCreateModal}
+          onSuccess={handleSuccess}
+        />
+
+        <InventoryFormModal
+          open={showEditModal}
+          onOpenChange={setShowEditModal}
+          onSuccess={handleSuccess}
+          item={selectedItem}
+        />
+
+        <InventoryDetailsModal
+          open={showDetailsModal}
+          onOpenChange={setShowDetailsModal}
+          itemId={selectedItemId}
+        />
+
+        <DeleteConfirmationModal
+          open={showDeleteModal}
+          onOpenChange={setShowDeleteModal}
+          onConfirm={handleDeleteConfirm}
+          title="Delete Inventory Item"
+          itemName={selectedItem?.parts_name}
+          loading={deleting}
+        />
       </div>
     </div>
   );

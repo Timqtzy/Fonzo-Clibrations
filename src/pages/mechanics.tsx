@@ -1,96 +1,116 @@
-import React, { useState } from 'react';
-import { Eye, Check, Trash2, ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight } from "lucide-react";
+import { useState, useEffect } from 'react';
+import {  Pencil, Trash2, ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight } from "lucide-react";
+import { mechanicsApi, activityLogsApi } from '@/services/api.service';
+import type { Database } from '@/types/database.types';
+import toast from 'react-hot-toast';
+import { MechanicFormModal } from '@/components/modals/MechanicFormModal';
+import { DeleteConfirmationModal } from '@/components/modals/DeleteConfirmationModal';
 
-type Mechanic = {
-  no: number;
-  id: string;
-  fullName: string;
-  role: string;
-  jobsCompleted: number;
-  currentJobs: number;
-  efficiency: string;
-};
-
-const initialData: Mechanic[] = [
-  {
-    no: 1,
-    id: "Mech-001",
-    fullName: "Spider Man",
-    role: "Mechanic",
-    jobsCompleted: 25,
-    currentJobs: 3,
-    efficiency: "90%",
-  },
-  {
-    no: 2,
-    id: "Mech-001",
-    fullName: "Spider Man",
-    role: "Mechanic",
-    jobsCompleted: 25,
-    currentJobs: 3,
-    efficiency: "90%",
-  },
-  {
-    no: 3,
-    id: "Mech-001",
-    fullName: "Spider Man",
-    role: "Mechanic",
-    jobsCompleted: 25,
-    currentJobs: 3,
-    efficiency: "90%",
-  },
-  {
-    no: 4,
-    id: "Mech-001",
-    fullName: "Spider Man",
-    role: "Mechanic",
-    jobsCompleted: 25,
-    currentJobs: 3,
-    efficiency: "90%",
-  },
-  {
-    no: 5,
-    id: "Mech-001",
-    fullName: "Spider Man",
-    role: "Mechanic",
-    jobsCompleted: 25,
-    currentJobs: 3,
-    efficiency: "90%",
-  },
-  {
-    no: 6,
-    id: "Mech-001",
-    fullName: "Spider Man",
-    role: "Mechanic",
-    jobsCompleted: 25,
-    currentJobs: 3,
-    efficiency: "90%",
-  },
-  {
-    no: 7,
-    id: "Mech-001",
-    fullName: "Spider Man",
-    role: "Mechanic",
-    jobsCompleted: 25,
-    currentJobs: 3,
-    efficiency: "90%",
-  },
-];
+type Mechanic = Database['public']['Tables']['mechanics']['Row'];
 
 export default function MechanicsTable() {
-  const [data, setData] = useState<Mechanic[]>(initialData);
+  const [data, setData] = useState<Mechanic[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [itemsPerPage, setItemsPerPage] = useState(20);
   const [currentPage, setCurrentPage] = useState(1);
+
+  // Modal states
+  const [showCreateModal, setShowCreateModal] = useState(false);
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [selectedMechanic, setSelectedMechanic] = useState<Mechanic | null>(null);
+  const [deleting, setDeleting] = useState(false);
+
+  useEffect(() => {
+    loadMechanics();
+  }, []);
+
+  const loadMechanics = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      const mechanics = await mechanicsApi.getAll();
+      setData(mechanics);
+    } catch (err) {
+      const message = err instanceof Error ? err.message : 'Failed to load mechanics';
+      setError(message);
+      toast.error(message);
+      console.error('Error loading mechanics:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const totalPages = Math.ceil(data.length / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
   const endIndex = startIndex + itemsPerPage;
   const currentData = data.slice(startIndex, endIndex);
 
-  const handleDelete = (index: number) => {
-    const newData = data.filter((_, i) => i !== startIndex + index);
-    setData(newData);
+  const handleDeleteClick = (mechanic: Mechanic) => {
+    setSelectedMechanic(mechanic);
+    setShowDeleteModal(true);
   };
+
+  const handleDeleteConfirm = async () => {
+    if (!selectedMechanic) return;
+
+    setDeleting(true);
+    try {
+      await mechanicsApi.delete(selectedMechanic.id);
+
+      // Log activity
+      try {
+        await activityLogsApi.log({
+          action: 'delete',
+          entity_type: 'mechanic',
+          entity_id: selectedMechanic.id,
+          entity_name: selectedMechanic.full_name,
+          description: `Deleted mechanic: ${selectedMechanic.full_name}`,
+          old_values: selectedMechanic
+        });
+      } catch (logErr) {
+        console.error('Failed to log activity:', logErr);
+      }
+
+      toast.success('Mechanic deleted successfully');
+      setShowDeleteModal(false);
+      setSelectedMechanic(null);
+      await loadMechanics();
+    } catch (err) {
+      const message = err instanceof Error ? err.message : 'Failed to delete mechanic';
+      toast.error(message);
+      console.error('Error deleting mechanic:', err);
+    } finally {
+      setDeleting(false);
+    }
+  };
+
+  const handleEdit = (mechanic: Mechanic) => {
+    setSelectedMechanic(mechanic);
+    setShowEditModal(true);
+  };
+
+  const handleSuccess = () => {
+    loadMechanics();
+    setSelectedMechanic(null);
+  };
+
+  if (loading) {
+    return (
+      <div className="w-full min-h-screen p-6 flex items-center justify-center">
+        <div className="text-lg">Loading mechanics...</div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="w-full min-h-screen p-6 flex items-center justify-center">
+        <div className="text-red-600">Error: {error}</div>
+      </div>
+    );
+  }
 
   return (
     <div className="w-full min-h-screen p-6">
@@ -107,7 +127,10 @@ export default function MechanicsTable() {
           <button className="px-6 py-2 bg-white border border-gray-300 rounded-md hover:bg-gray-50 transition-colors font-medium text-gray-900">
             VIEW PERFORMANCE
           </button>
-          <button className="px-6 py-2 bg-gray-900 text-white rounded-md hover:bg-gray-800 transition-colors font-medium">
+          <button
+            onClick={() => setShowCreateModal(true)}
+            className="px-6 py-2 bg-gray-900 text-white rounded-md hover:bg-gray-800 transition-colors font-medium"
+          >
             CREATE
           </button>
         </div>
@@ -130,25 +153,27 @@ export default function MechanicsTable() {
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
                 {currentData.map((mechanic, index) => (
-                  <tr key={index} className="hover:bg-gray-50 transition-colors">
-                    <td className="px-4 py-4 text-sm text-gray-900">{mechanic.no}</td>
-                    <td className="px-4 py-4 text-sm text-gray-900">{mechanic.id}</td>
-                    <td className="px-4 py-4 text-sm text-gray-900">{mechanic.fullName}</td>
+                  <tr key={mechanic.id} className="hover:bg-gray-50 transition-colors">
+                    <td className="px-4 py-4 text-sm text-gray-900">{startIndex + index + 1}</td>
+                    <td className="px-4 py-4 text-sm text-gray-900">{mechanic.mechanic_id}</td>
+                    <td className="px-4 py-4 text-sm text-gray-900">{mechanic.full_name}</td>
                     <td className="px-4 py-4 text-sm text-gray-900">{mechanic.role}</td>
-                    <td className="px-4 py-4 text-sm text-gray-900">{mechanic.jobsCompleted}</td>
-                    <td className="px-4 py-4 text-sm text-gray-900">{mechanic.currentJobs}</td>
-                    <td className="px-4 py-4 text-sm text-gray-900">{mechanic.efficiency}</td>
+                    <td className="px-4 py-4 text-sm text-gray-900">{mechanic.jobs_completed}</td>
+                    <td className="px-4 py-4 text-sm text-gray-900">{mechanic.current_jobs}</td>
+                    <td className="px-4 py-4 text-sm text-gray-900">{mechanic.efficiency_rating}%</td>
                     <td className="px-4 py-4">
                       <div className="flex gap-2 justify-center">
-                        <button className="p-2 rounded bg-blue-100 hover:bg-blue-200 transition-colors">
-                          <Eye className="h-4 w-4 text-blue-600" />
+                        <button
+                          onClick={() => handleEdit(mechanic)}
+                          className="p-2 rounded bg-green-100 hover:bg-green-200 transition-colors"
+                          title="Edit Mechanic"
+                        >
+                          <Pencil className="h-4 w-4 text-green-600" />
                         </button>
-                        <button className="p-2 rounded bg-green-100 hover:bg-green-200 transition-colors">
-                          <Check className="h-4 w-4 text-green-600" />
-                        </button>
-                        <button 
-                          onClick={() => handleDelete(index)}
+                        <button
+                          onClick={() => handleDeleteClick(mechanic)}
                           className="p-2 rounded bg-red-100 hover:bg-red-200 transition-colors"
+                          title="Delete Mechanic"
                         >
                           <Trash2 className="h-4 w-4 text-red-600" />
                         </button>
@@ -212,6 +237,29 @@ export default function MechanicsTable() {
             </div>
           </div>
         </div>
+
+        {/* Modals */}
+        <MechanicFormModal
+          open={showCreateModal}
+          onOpenChange={setShowCreateModal}
+          onSuccess={handleSuccess}
+        />
+
+        <MechanicFormModal
+          open={showEditModal}
+          onOpenChange={setShowEditModal}
+          onSuccess={handleSuccess}
+          mechanic={selectedMechanic}
+        />
+
+        <DeleteConfirmationModal
+          open={showDeleteModal}
+          onOpenChange={setShowDeleteModal}
+          onConfirm={handleDeleteConfirm}
+          title="Delete Mechanic"
+          itemName={selectedMechanic?.full_name}
+          loading={deleting}
+        />
       </div>
     </div>
   );

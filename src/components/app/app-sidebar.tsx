@@ -22,6 +22,7 @@ import {
   CalendarClock,
   Users,
   Shield,
+  Activity,
 } from "lucide-react";
 import { useNavigate, useLocation } from "react-router-dom";
 import Logo from "../../assets/fonzoLogo.jpg";
@@ -72,6 +73,11 @@ const navigationItems = [
     title: "User Management",
     url: "/user-management",
     icon: Shield,
+  },
+  {
+    title: "Activity Logs",
+    url: "/activity-logs",
+    icon: Activity,
   },
   {
     title: "Settings",
