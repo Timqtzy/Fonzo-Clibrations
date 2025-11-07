@@ -120,7 +120,7 @@ export function ChartBarInteractive() {
         <div className="flex flex-1 flex-col justify-center gap-1 px-6 pt-4 pb-3 sm:!py-0">
           <CardTitle>Revenue & Job Metrics</CardTitle>
           <CardDescription>
-            Showing revenue and job count by month
+            Showing revenue and job count by months
           </CardDescription>
         </div>
         <div className="flex">
