@@ -17,7 +17,35 @@ export default function ResetPassword() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Check if user has a valid recovery session
+    // Set up auth state change listener FIRST to catch PASSWORD_RECOVERY event
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      async (event, session) => {
+        if (event === 'PASSWORD_RECOVERY') {
+          setIsValidSession(true);
+          setIsChecking(false);
+          setError('');
+        } else if (event === 'SIGNED_IN' && session) {
+          // User might already be signed in from the recovery link
+          setIsValidSession(true);
+          setIsChecking(false);
+          setError('');
+        }
+      }
+    );
+
+    // Check if there's a hash in the URL (Supabase recovery tokens)
+    const hashParams = new URLSearchParams(window.location.hash.substring(1));
+    const accessToken = hashParams.get('access_token');
+    const type = hashParams.get('type');
+
+    if (accessToken && type === 'recovery') {
+      // Supabase will automatically handle the token exchange
+      // The onAuthStateChange listener will catch the PASSWORD_RECOVERY event
+      // Just wait for it to process
+      return () => subscription.unsubscribe();
+    }
+
+    // No hash params - check for existing valid session
     const checkSession = async () => {
       const { data: { session } } = await supabase.auth.getSession();
 
@@ -29,19 +57,13 @@ export default function ResetPassword() {
       setIsChecking(false);
     };
 
-    checkSession();
+    // Small delay to allow Supabase to process any tokens
+    const timer = setTimeout(checkSession, 500);
 
-    // Listen for auth state changes (when user clicks magic link)
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (event) => {
-        if (event === 'PASSWORD_RECOVERY') {
-          setIsValidSession(true);
-          setIsChecking(false);
-        }
-      }
-    );
-
-    return () => subscription.unsubscribe();
+    return () => {
+      subscription.unsubscribe();
+      clearTimeout(timer);
+    };
   }, []);
 
   const handleResetPassword = async (e: React.FormEvent<HTMLFormElement>) => {

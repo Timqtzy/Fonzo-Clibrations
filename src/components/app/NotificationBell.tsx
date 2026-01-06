@@ -70,15 +70,6 @@ export default function NotificationBell() {
     }
   };
 
-  const loadUnreadCount = async () => {
-    try {
-      const count = await notificationsApi.getUnreadCount();
-      setUnreadCount(count);
-    } catch (error) {
-      console.error("Error loading unread count:", error);
-    }
-  };
-
   const handleMarkAsRead = async (id: string) => {
     try {
       await notificationsApi.markAsRead(id);
