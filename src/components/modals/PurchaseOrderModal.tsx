@@ -318,7 +318,7 @@ export function PurchaseOrderModal({ open, onOpenChange, onSuccess }: PurchaseOr
                   <button
                     type="button"
                     onClick={handleAddItem}
-                    className="w-full px-4 py-2.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-all flex items-center justify-center gap-2 font-medium shadow-sm hover:shadow-md"
+                    className="w-full px-4 py-2.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-all flex items-center justify-center gap-2 font-medium shadow-sm hover:shadow-md cursor-pointer"
                   >
                     <Plus className="h-4 w-4" />
                     Add
@@ -358,7 +358,7 @@ export function PurchaseOrderModal({ open, onOpenChange, onSuccess }: PurchaseOr
                             <button
                               type="button"
                               onClick={() => handleRemoveItem(index)}
-                              className="p-2 rounded-lg text-red-600 hover:bg-red-50 hover:text-red-700 transition-all"
+                              className="p-2 rounded-lg text-red-600 hover:bg-red-50 hover:text-red-700 transition-all cursor-pointer"
                               title="Remove item"
                             >
                               <Trash2 className="h-4 w-4" />
@@ -418,14 +418,14 @@ export function PurchaseOrderModal({ open, onOpenChange, onSuccess }: PurchaseOr
             <button
               type="button"
               onClick={handleClose}
-              className="px-6 py-2.5 border-2 border-gray-300 rounded-lg hover:bg-gray-50 transition-all font-medium text-gray-700 hover:border-gray-400"
+              className="px-6 py-2.5 border-2 border-gray-300 rounded-lg hover:bg-gray-50 transition-all font-medium text-gray-700 hover:border-gray-400 cursor-pointer"
               disabled={loading}
             >
               Cancel
             </button>
             <button
               type="submit"
-              className="px-6 py-2.5 bg-gray-900 text-white rounded-lg hover:bg-gray-800 transition-all font-medium disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 shadow-md hover:shadow-lg"
+              className="px-6 py-2.5 bg-gray-900 text-white rounded-lg hover:bg-gray-800 transition-all font-medium disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 shadow-md hover:shadow-lg cursor-pointer"
               disabled={loading || orderItems.length === 0}
             >
               {loading ? (

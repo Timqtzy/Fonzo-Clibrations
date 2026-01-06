@@ -52,7 +52,7 @@ export function DeleteConfirmationModal({
           <button
             type="button"
             onClick={() => onOpenChange(false)}
-            className="px-5 py-2.5 border border-gray-300 rounded-lg hover:bg-gray-50 transition-all duration-200 font-medium text-gray-700 shadow-sm hover:shadow"
+            className="px-5 py-2.5 border border-gray-300 rounded-lg hover:bg-gray-50 transition-all duration-200 font-medium text-gray-700 shadow-sm hover:shadow cursor-pointer"
             disabled={loading}
           >
             Cancel
@@ -60,7 +60,7 @@ export function DeleteConfirmationModal({
           <button
             type="button"
             onClick={onConfirm}
-            className="px-5 py-2.5 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed font-medium shadow-md hover:shadow-lg"
+            className="px-5 py-2.5 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed font-medium shadow-md hover:shadow-lg cursor-pointer"
             disabled={loading}
           >
             {loading ? (

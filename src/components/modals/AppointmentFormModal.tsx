@@ -4,6 +4,7 @@ import { appointmentsApi } from '@/services/api.service';
 import type { Database } from '@/types/database.types';
 import toast from 'react-hot-toast';
 import { Calendar, Clock, User, Mail, Car, FileText, Tag } from 'lucide-react';
+import { notifyNewAppointment, notifyAppointmentCompleted, notifyAppointmentCancelled } from '@/helper/notificationHelper';
 
 type Appointment = Database['public']['Tables']['appointments']['Row'];
 type AppointmentInsert = Database['public']['Tables']['appointments']['Insert'];
@@ -59,9 +60,27 @@ export function AppointmentFormModal({ open, onOpenChange, onSuccess, appointmen
       if (appointment) {
         await appointmentsApi.update(appointment.id, formData);
         toast.success('Appointment updated successfully');
+
+        // Send notifications for status changes
+        if (formData.status !== appointment.status) {
+          if (formData.status === 'Completed') {
+            await notifyAppointmentCompleted(formData.name);
+          } else if (formData.status === 'Cancelled') {
+            await notifyAppointmentCancelled(formData.name);
+          }
+        }
       } else {
         await appointmentsApi.create(formData);
         toast.success('Appointment created successfully');
+
+        // Send notification for new appointment
+        const formattedDate = new Date(formData.appointment_date).toLocaleDateString('en-US', {
+          weekday: 'short',
+          year: 'numeric',
+          month: 'short',
+          day: 'numeric',
+        });
+        await notifyNewAppointment(formData.name, formattedDate);
       }
       onSuccess();
       onOpenChange(false);
@@ -233,14 +252,14 @@ export function AppointmentFormModal({ open, onOpenChange, onSuccess, appointmen
             <button
               type="button"
               onClick={() => onOpenChange(false)}
-              className="px-5 py-2.5 border border-gray-300 rounded-lg hover:bg-gray-50 transition-all duration-200 font-medium text-gray-700 shadow-sm hover:shadow"
+              className="px-5 py-2.5 border border-gray-300 rounded-lg hover:bg-gray-50 transition-all duration-200 font-medium text-gray-700 shadow-sm hover:shadow cursor-pointer"
               disabled={loading}
             >
               Cancel
             </button>
             <button
               type="submit"
-              className="px-5 py-2.5 bg-gray-900 text-white rounded-lg hover:bg-gray-800 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed font-medium shadow-md hover:shadow-lg"
+              className="px-5 py-2.5 bg-gray-900 text-white rounded-lg hover:bg-gray-800 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed font-medium shadow-md hover:shadow-lg cursor-pointer"
               disabled={loading}
             >
               {loading ? (

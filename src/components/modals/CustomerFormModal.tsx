@@ -4,6 +4,7 @@ import { customersApi } from '@/services/api.service';
 import type { Database } from '@/types/database.types';
 import toast from 'react-hot-toast';
 import { User, Phone, Mail, MapPin, FileText } from 'lucide-react';
+import { notifyNewCustomer } from '@/helper/notificationHelper';
 
 type Customer = Database['public']['Tables']['customers']['Row'];
 type CustomerInsert = Database['public']['Tables']['customers']['Insert'];
@@ -56,6 +57,9 @@ export function CustomerFormModal({ open, onOpenChange, onSuccess, customer }: C
       } else {
         await customersApi.create(formData);
         toast.success('Customer created successfully');
+
+        // Send notification for new customer
+        await notifyNewCustomer(formData.full_name);
       }
       onSuccess();
       onOpenChange(false);
@@ -179,14 +183,14 @@ export function CustomerFormModal({ open, onOpenChange, onSuccess, customer }: C
             <button
               type="button"
               onClick={() => onOpenChange(false)}
-              className="px-5 py-2.5 border border-gray-300 rounded-lg hover:bg-gray-50 transition-all duration-200 font-medium text-gray-700 shadow-sm hover:shadow"
+              className="px-5 py-2.5 border border-gray-300 rounded-lg hover:bg-gray-50 transition-all duration-200 font-medium text-gray-700 shadow-sm hover:shadow cursor-pointer"
               disabled={loading}
             >
               Cancel
             </button>
             <button
               type="submit"
-              className="px-5 py-2.5 bg-gray-900 text-white rounded-lg hover:bg-gray-800 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed font-medium shadow-md hover:shadow-lg"
+              className="px-5 py-2.5 bg-gray-900 text-white rounded-lg hover:bg-gray-800 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed font-medium shadow-md hover:shadow-lg cursor-pointer"
               disabled={loading}
             >
               {loading ? (

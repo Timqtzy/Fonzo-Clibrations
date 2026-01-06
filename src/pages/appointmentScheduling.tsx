@@ -158,8 +158,7 @@ export default function AppointmentScheduling() {
   }
 
   return (
-    <div className="w-full min-h-screen p-6">
-      <div className="max-w-7xl mx-auto">
+    <div className="py-4 px-2 md:px-6 lg:px-18">
         <section className="flex flex-col gap-2 mb-6">
           <h1 className="text-3xl font-bold">Appointments</h1>
           <p className="text-muted-foreground">
@@ -321,7 +320,6 @@ export default function AppointmentScheduling() {
           itemName={selectedAppointment?.customers?.full_name || selectedAppointment?.name}
           loading={deleting}
         />
-      </div>
     </div>
   );
 }

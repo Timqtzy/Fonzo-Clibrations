@@ -1171,3 +1171,164 @@ export const categoriesApi = {
     return data;
   },
 };
+
+// =====================================================
+// NOTIFICATIONS API
+// =====================================================
+
+export interface Notification {
+  id: string;
+  title: string;
+  message: string;
+  type: 'info' | 'warning' | 'success' | 'error';
+  category: 'appointment' | 'job_order' | 'inventory' | 'customer' | 'system';
+  is_read: boolean;
+  link?: string;
+  created_at: string;
+}
+
+export const notificationsApi = {
+  async getAll() {
+    const { data, error } = await supabase
+      .from('notifications')
+      .select('*')
+      .order('created_at', { ascending: false })
+      .limit(50);
+
+    if (error) throw error;
+    return data as Notification[];
+  },
+
+  async getUnread() {
+    const { data, error } = await supabase
+      .from('notifications')
+      .select('*')
+      .eq('is_read', false)
+      .order('created_at', { ascending: false });
+
+    if (error) throw error;
+    return data as Notification[];
+  },
+
+  async getUnreadCount() {
+    const { count, error } = await supabase
+      .from('notifications')
+      .select('*', { count: 'exact', head: true })
+      .eq('is_read', false);
+
+    if (error) throw error;
+    return count || 0;
+  },
+
+  async markAsRead(id: string) {
+    const { error } = await supabase
+      .from('notifications')
+      .update({ is_read: true })
+      .eq('id', id);
+
+    if (error) throw error;
+  },
+
+  async markAllAsRead() {
+    const { error } = await supabase
+      .from('notifications')
+      .update({ is_read: true })
+      .eq('is_read', false);
+
+    if (error) throw error;
+  },
+
+  async create(notification: Omit<Notification, 'id' | 'created_at' | 'is_read'>) {
+    const { data, error } = await supabase
+      .from('notifications')
+      .insert({
+        ...notification,
+        is_read: false,
+      })
+      .select()
+      .single();
+
+    if (error) throw error;
+    return data as Notification;
+  },
+
+  async delete(id: string) {
+    const { error } = await supabase
+      .from('notifications')
+      .delete()
+      .eq('id', id);
+
+    if (error) throw error;
+  },
+
+  async deleteAll() {
+    const { error } = await supabase
+      .from('notifications')
+      .delete()
+      .neq('id', '00000000-0000-0000-0000-000000000000'); // Delete all
+
+    if (error) throw error;
+  },
+};
+
+// =====================================================
+// SETTINGS API
+// =====================================================
+
+export interface WorkshopSettings {
+  id?: string;
+  workshop_name: string;
+  address: string;
+  contact_info: string;
+  email?: string;
+  notifications_enabled: boolean;
+  created_at?: string;
+  updated_at?: string;
+}
+
+export const settingsApi = {
+  async get() {
+    const { data, error } = await supabase
+      .from('settings')
+      .select('*')
+      .single();
+
+    if (error && error.code !== 'PGRST116') throw error; // PGRST116 = no rows returned
+    return data as WorkshopSettings | null;
+  },
+
+  async upsert(settings: Partial<WorkshopSettings>) {
+    // First try to get existing settings
+    const existing = await this.get();
+
+    if (existing?.id) {
+      // Update existing
+      const { data, error } = await supabase
+        .from('settings')
+        .update({
+          ...settings,
+          updated_at: new Date().toISOString(),
+        })
+        .eq('id', existing.id)
+        .select()
+        .single();
+
+      if (error) throw error;
+      return data as WorkshopSettings;
+    } else {
+      // Insert new
+      const { data, error } = await supabase
+        .from('settings')
+        .insert({
+          ...settings,
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString(),
+        })
+        .select()
+        .single();
+
+      if (error) throw error;
+      return data as WorkshopSettings;
+    }
+  },
+};

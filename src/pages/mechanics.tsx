@@ -113,8 +113,7 @@ export default function MechanicsTable() {
   }
 
   return (
-    <div className="w-full min-h-screen p-6">
-      <div className="max-w-7xl mx-auto">
+    <div className="py-4 px-2 md:px-6 lg:px-18">
         {/* Header */}
         <section className="flex flex-col gap-2 mb-6">
           <h1 className="text-3xl font-bold">Mechanics</h1>
@@ -260,7 +259,6 @@ export default function MechanicsTable() {
           itemName={selectedMechanic?.full_name}
           loading={deleting}
         />
-      </div>
     </div>
   );
 }

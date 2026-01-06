@@ -166,8 +166,7 @@ export default function CustomerDataTable() {
   }
 
   return (
-    <div className="w-full min-h-screen p-6">
-      <div className="max-w-7xl mx-auto">
+    <div className="py-4 px-2 md:px-6 lg:px-18">
         <section className="flex flex-col gap-2 mb-6">
           <h1 className="text-3xl font-bold">Job Orders</h1>
           <p className="text-muted-foreground">
@@ -331,7 +330,6 @@ export default function CustomerDataTable() {
           itemName={selectedJobOrder?.job_order_id || selectedJobOrder?.customers?.full_name}
           loading={deleting}
         />
-      </div>
     </div>
     </div>
   );

@@ -4,6 +4,7 @@ import { inventoryApi, categoriesApi, suppliersApi } from '@/services/api.servic
 import type { Database } from '@/types/database.types';
 import toast from 'react-hot-toast';
 import { Package, Tag, TrendingUp, DollarSign, MapPin, FileText, AlertCircle } from 'lucide-react';
+import { notifyLowStock, notifyOutOfStock, notifyStockRestocked } from '@/helper/notificationHelper';
 
 type InventoryItem = Database['public']['Tables']['inventory_items']['Row'];
 type InventoryItemInsert = Database['public']['Tables']['inventory_items']['Insert'];
@@ -97,9 +98,36 @@ export function InventoryFormModal({ open, onOpenChange, onSuccess, item }: Inve
       if (item) {
         await inventoryApi.update(item.id, formData);
         toast.success('Item updated successfully');
+
+        // Check for stock-related notifications
+        const oldQty = item.quantity;
+        const newQty = formData.quantity || 0;
+        const minStock = formData.minimum_stock || 10;
+
+        // Notify if restocked (quantity increased significantly)
+        if (newQty > oldQty && oldQty <= minStock && newQty > minStock) {
+          await notifyStockRestocked(formData.parts_name, newQty - oldQty);
+        }
+        // Notify if now out of stock
+        else if (newQty === 0 && oldQty > 0) {
+          await notifyOutOfStock(formData.parts_name);
+        }
+        // Notify if low stock
+        else if (newQty <= minStock && newQty > 0 && oldQty > minStock) {
+          await notifyLowStock(formData.parts_name, newQty, minStock);
+        }
       } else {
         await inventoryApi.create(formData);
         toast.success('Item created successfully');
+
+        // Check if new item is already low or out of stock
+        const qty = formData.quantity || 0;
+        const minStock = formData.minimum_stock || 10;
+        if (qty === 0) {
+          await notifyOutOfStock(formData.parts_name);
+        } else if (qty <= minStock) {
+          await notifyLowStock(formData.parts_name, qty, minStock);
+        }
       }
       onSuccess();
       onOpenChange(false);
@@ -312,14 +340,14 @@ export function InventoryFormModal({ open, onOpenChange, onSuccess, item }: Inve
             <button
               type="button"
               onClick={() => onOpenChange(false)}
-              className="px-5 py-2.5 border border-gray-300 rounded-lg hover:bg-gray-50 transition-all duration-200 font-medium text-gray-700 shadow-sm hover:shadow"
+              className="px-5 py-2.5 border border-gray-300 rounded-lg hover:bg-gray-50 transition-all duration-200 font-medium text-gray-700 shadow-sm hover:shadow cursor-pointer"
               disabled={loading}
             >
               Cancel
             </button>
             <button
               type="submit"
-              className="px-5 py-2.5 bg-gray-900 text-white rounded-lg hover:bg-gray-800 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed font-medium shadow-md hover:shadow-lg"
+              className="px-5 py-2.5 bg-gray-900 text-white rounded-lg hover:bg-gray-800 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed font-medium shadow-md hover:shadow-lg cursor-pointer"
               disabled={loading}
             >
               {loading ? (

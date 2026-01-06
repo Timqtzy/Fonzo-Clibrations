@@ -4,6 +4,7 @@ import { jobOrdersApi, customersApi, vehiclesApi } from '@/services/api.service'
 import type { Database } from '@/types/database.types';
 import toast from 'react-hot-toast';
 import { Clipboard, User, Car, Calendar, DollarSign, FileText } from 'lucide-react';
+import { notifyNewJobOrder, notifyJobOrderStatusChange, notifyJobOrderCompleted } from '@/helper/notificationHelper';
 
 type JobOrder = Database['public']['Tables']['job_orders']['Row'];
 type JobOrderInsert = Partial<Database['public']['Tables']['job_orders']['Insert']>;
@@ -134,9 +135,21 @@ export function JobOrderFormModal({ open, onOpenChange, onSuccess, jobOrder }: J
       if (jobOrder) {
         await jobOrdersApi.update(jobOrder.id, formData as any);
         toast.success('Job order updated successfully');
+
+        // Send notifications for status changes
+        if (formData.status !== jobOrder.status) {
+          if (formData.status === 'Completed') {
+            await notifyJobOrderCompleted(formData.job_order_id || '', formData.full_name || '');
+          } else {
+            await notifyJobOrderStatusChange(formData.job_order_id || '', formData.status || '');
+          }
+        }
       } else {
         await jobOrdersApi.create(formData as any);
         toast.success('Job order created successfully');
+
+        // Send notification for new job order
+        await notifyNewJobOrder(formData.job_order_id || '', formData.full_name || '');
       }
       onSuccess();
       onOpenChange(false);
@@ -344,14 +357,14 @@ export function JobOrderFormModal({ open, onOpenChange, onSuccess, jobOrder }: J
             <button
               type="button"
               onClick={() => onOpenChange(false)}
-              className="px-5 py-2.5 border border-gray-300 rounded-lg hover:bg-gray-50 transition-all duration-200 font-medium text-gray-700 shadow-sm hover:shadow"
+              className="px-5 py-2.5 border border-gray-300 rounded-lg hover:bg-gray-50 transition-all duration-200 font-medium text-gray-700 shadow-sm hover:shadow cursor-pointer"
               disabled={loading}
             >
               Cancel
             </button>
             <button
               type="submit"
-              className="px-5 py-2.5 bg-gray-900 text-white rounded-lg hover:bg-gray-800 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed font-medium shadow-md hover:shadow-lg"
+              className="px-5 py-2.5 bg-gray-900 text-white rounded-lg hover:bg-gray-800 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed font-medium shadow-md hover:shadow-lg cursor-pointer"
               disabled={loading}
             >
               {loading ? (

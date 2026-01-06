@@ -148,8 +148,7 @@ export default function InventorySupplies() {
   }
 
   return (
-    <div className="w-full min-h-screen p-6">
-      <div className="max-w-7xl mx-auto">
+    <div className="py-4 px-2 md:px-6 lg:px-18">
         {/* Header */}
         <section className="flex flex-col gap-2 mb-6">
           <h1 className="text-3xl font-bold">Inventory & Supplies</h1>
@@ -405,7 +404,6 @@ export default function InventorySupplies() {
           itemName={selectedItem?.parts_name}
           loading={deleting}
         />
-      </div>
     </div>
   );
 }

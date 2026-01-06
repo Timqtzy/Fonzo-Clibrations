@@ -242,7 +242,7 @@ export function UserDetailsModal({ open, onOpenChange, userId }: UserDetailsModa
         <DialogFooter>
           <button
             onClick={() => onOpenChange(false)}
-            className="px-5 py-2.5 bg-gray-900 text-white rounded-lg hover:bg-gray-800 transition-all duration-200 font-medium shadow-md hover:shadow-lg"
+            className="px-5 py-2.5 bg-gray-900 text-white rounded-lg hover:bg-gray-800 transition-all duration-200 font-medium shadow-md hover:shadow-lg cursor-pointer"
           >
             Close
           </button>

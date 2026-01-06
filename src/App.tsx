@@ -7,6 +7,7 @@ import Layout from './components/app/layout'
 // Lazy load pages for code splitting
 const Landing = lazy(() => import('./pages/landing'))
 const Login = lazy(() => import('./pages/login'))
+const ResetPassword = lazy(() => import('./pages/reset-password'))
 const Dashboard = lazy(() => import('./pages/dashboard'))
 const JobOrders = lazy(() => import('./pages/jobOrders'))
 const WorkAssign = lazy(() => import('./pages/workAssign'))
@@ -53,6 +54,10 @@ function App() {
               <Login />
             </PublicRoute>
           }
+        />
+        <Route
+          path="/reset-password"
+          element={<ResetPassword />}
         />
         <Route
           path="/dashboard"
