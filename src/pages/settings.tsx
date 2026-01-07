@@ -89,7 +89,7 @@ export default function Settings() {
           .from("profiles")
           .select("full_name, phone, role")
           .eq("id", user.id)
-          .single();
+          .maybeSingle();
 
         if (profileError) {
           console.error("Profile fetch error:", profileError);

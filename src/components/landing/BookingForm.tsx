@@ -151,7 +151,7 @@ export function BookingForm() {
           preferred_date: formattedDate,
           preferred_time: formData.preferredTime,
           message: formData.message,
-          status: "pending",
+          status: "Pending",
           created_at: new Date().toISOString()
         }
       ]);

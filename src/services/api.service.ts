@@ -1291,9 +1291,9 @@ export const settingsApi = {
     const { data, error } = await supabase
       .from('settings')
       .select('*')
-      .single();
+      .maybeSingle();
 
-    if (error && error.code !== 'PGRST116') throw error; // PGRST116 = no rows returned
+    if (error) throw error;
     return data as WorkshopSettings | null;
   },
 

@@ -220,11 +220,11 @@ export default function WorkAssignment() {
                             }}
                             className="appearance-none w-full px-3 py-1.5 pr-8 rounded border border-gray-300 bg-white text-gray-900 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer"
                           >
-                            <option value="Pending">Pending</option>
                             <option value="Diagnosing">Diagnosing</option>
                             <option value="In Progress">In Progress</option>
-                            <option value="Completed">Completed</option>
                             <option value="On Hold">On Hold</option>
+                            <option value="Completed">Completed</option>
+                            <option value="Cancelled">Cancelled</option>
                           </select>
                           <ChevronDown className="absolute right-2 top-1/2 -translate-y-1/2 h-4 w-4 pointer-events-none text-gray-400" />
                         </div>
@@ -479,7 +479,9 @@ export default function WorkAssignment() {
                             ? 'bg-purple-100 text-purple-800 border border-purple-200'
                             : selectedAssignment.status === 'On Hold'
                             ? 'bg-orange-100 text-orange-800 border border-orange-200'
-                            : 'bg-yellow-100 text-yellow-800 border border-yellow-200'
+                            : selectedAssignment.status === 'Cancelled'
+                            ? 'bg-red-100 text-red-800 border border-red-200'
+                            : 'bg-gray-100 text-gray-800 border border-gray-200'
                         }`}>
                           {selectedAssignment.status}
                         </span>

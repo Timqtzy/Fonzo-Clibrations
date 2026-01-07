@@ -26,7 +26,7 @@ export function WorkAssignmentFormModal({ open, onOpenChange, onSuccess, workAss
     job_order_id: '',
     mechanic_id: '',
     deadline: '',
-    status: 'Pending',
+    status: 'Diagnosing',
     issue_encountered: '',
     problem_notes: '',
   });
@@ -53,7 +53,7 @@ export function WorkAssignmentFormModal({ open, onOpenChange, onSuccess, workAss
         job_order_id: '',
         mechanic_id: '',
         deadline: '',
-        status: 'Pending',
+        status: 'Diagnosing',
         issue_encountered: '',
         problem_notes: '',
       });
@@ -63,10 +63,11 @@ export function WorkAssignmentFormModal({ open, onOpenChange, onSuccess, workAss
   const loadJobOrders = async () => {
     try {
       const data = await jobOrdersApi.getAll();
-      // Filter to only show pending/in-progress orders
-      const availableOrders = data.filter(order =>
-        order.status === 'Pending' || order.status === 'In Progress'
-      );
+      // Filter to only show pending/in-progress orders (case-insensitive)
+      const availableOrders = data.filter(order => {
+        const status = order.status?.toLowerCase();
+        return status === 'pending' || status === 'in progress';
+      });
       setJobOrders(availableOrders);
     } catch (err) {
       console.error('Error loading job orders:', err);
@@ -103,7 +104,7 @@ export function WorkAssignmentFormModal({ open, onOpenChange, onSuccess, workAss
           assigned_mechanic: selectedMechanic?.full_name || 'Unknown',
           mechanic_id: formData.mechanic_id || '',
           deadline: formData.deadline || new Date().toISOString(),
-          status: formData.status || 'Pending',
+          status: formData.status || 'Diagnosing',
           issue_encountered: formData.issue_encountered || null,
           problem_notes: formData.problem_notes || null,
         };
@@ -216,11 +217,11 @@ export function WorkAssignmentFormModal({ open, onOpenChange, onSuccess, workAss
                       onChange={(e) => setFormData({ ...formData, status: e.target.value })}
                       className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 hover:border-gray-400"
                     >
-                      <option value="Pending">Pending</option>
                       <option value="Diagnosing">Diagnosing</option>
                       <option value="In Progress">In Progress</option>
-                      <option value="Completed">Completed</option>
                       <option value="On Hold">On Hold</option>
+                      <option value="Completed">Completed</option>
+                      <option value="Cancelled">Cancelled</option>
                     </select>
                   </div>
                 </div>
