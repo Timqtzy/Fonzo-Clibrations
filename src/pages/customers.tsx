@@ -1,5 +1,12 @@
 import { useState, useEffect } from 'react';
 import { Eye, Pencil, Trash2, ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight, ChevronDown, FileText, Lightbulb, CheckCircle, User, MessageSquare } from "lucide-react";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { customersApi, applicationsApi, activityLogsApi, jobOrdersApi } from '@/services/api.service';
 import type { Database } from '@/types/database.types';
 import toast from 'react-hot-toast';
@@ -258,7 +265,7 @@ export default function Customers() {
             <div className="flex justify-end mb-4">
               <button
                 onClick={() => setShowCreateModal(true)}
-                className="px-6 py-2 bg-gray-900 text-white rounded-md hover:bg-gray-800 transition-colors font-medium"
+                className="px-6 py-2 bg-gray-900 text-white rounded-lg hover:bg-gray-800 transition-colors font-medium"
               >
                 CREATE
               </button>
@@ -269,14 +276,14 @@ export default function Customers() {
                 <table className="w-full">
                   <thead className="bg-gray-50 border-b border-gray-200">
                     <tr>
-                      <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700">No.</th>
-                      <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700">Full Name</th>
-                      <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700">Contact No.</th>
-                      <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700">Email</th>
-                      <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700">Total Jobs</th>
-                      <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700">Total Revenue</th>
-                      <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700">Last Visit</th>
-                      <th className="px-4 py-3 text-center text-sm font-semibold text-gray-700">Action</th>
+                      <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">No.</th>
+                      <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Full Name</th>
+                      <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Contact No.</th>
+                      <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Email</th>
+                      <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Total Jobs</th>
+                      <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Total Revenue</th>
+                      <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Last Visit</th>
+                      <th className="px-4 py-3 text-center text-xs font-semibold text-gray-700 uppercase tracking-wider">Action</th>
                     </tr>
                   </thead>
                   <tbody className="bg-white divide-y divide-gray-200">
@@ -325,18 +332,16 @@ export default function Customers() {
               </div>
 
               <div className="px-4 py-3 border-t border-gray-200 flex items-center justify-between">
-                <select
-                  value={itemsPerPage}
-                  onChange={(e) => {
-                    setItemsPerPage(Number(e.target.value));
-                    setCurrentPage(1);
-                  }}
-                  className="px-3 py-1.5 border border-gray-300 rounded text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                >
-                  <option value={10}>10</option>
-                  <option value={20}>20</option>
-                  <option value={50}>50</option>
-                </select>
+                <Select value={String(itemsPerPage)} onValueChange={(value) => { setItemsPerPage(Number(value)); setCurrentPage(1); }}>
+                  <SelectTrigger className="w-[80px] rounded-lg">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent className="rounded-xl">
+                    <SelectItem value="10" className="rounded-lg">10</SelectItem>
+                    <SelectItem value="20" className="rounded-lg">20</SelectItem>
+                    <SelectItem value="50" className="rounded-lg">50</SelectItem>
+                  </SelectContent>
+                </Select>
                 <div className="flex items-center gap-2">
                   <button
                     onClick={() => setCurrentPage(1)}
@@ -377,7 +382,7 @@ export default function Customers() {
         {activeTab === 'applications' && (
           <>
             <div className="flex justify-end mb-4">
-              <button className="px-6 py-2 bg-gray-900 text-white rounded-md hover:bg-gray-800 transition-colors font-medium">
+              <button className="px-6 py-2 bg-gray-900 text-white rounded-lg hover:bg-gray-800 transition-colors font-medium">
                 Repair Requests
               </button>
             </div>
@@ -390,34 +395,42 @@ export default function Customers() {
                     <p className="text-sm text-gray-600 mb-1">Total Applications</p>
                     <h2 className="text-3xl font-bold text-gray-900">{totalApplications}</h2>
                   </div>
-                  <FileText className="h-6 w-6 text-gray-400" />
+                  <div className="p-3 bg-gray-100 rounded-lg">
+                    <FileText className="h-6 w-6 text-gray-600" />
+                  </div>
                 </div>
               </div>
               <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
                 <div className="flex items-start justify-between">
                   <div>
                     <p className="text-sm text-gray-600 mb-1">Pending</p>
-                    <h2 className="text-3xl font-bold text-gray-900">{pendingCount}</h2>
+                    <h2 className="text-3xl font-bold text-yellow-600">{pendingCount}</h2>
                   </div>
-                  <Lightbulb className="h-6 w-6 text-gray-400" />
+                  <div className="p-3 bg-yellow-100 rounded-lg">
+                    <Lightbulb className="h-6 w-6 text-yellow-600" />
+                  </div>
                 </div>
               </div>
               <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
                 <div className="flex items-start justify-between">
                   <div>
                     <p className="text-sm text-gray-600 mb-1">Approved</p>
-                    <h2 className="text-3xl font-bold text-gray-900">{approvedCount}</h2>
+                    <h2 className="text-3xl font-bold text-green-600">{approvedCount}</h2>
                   </div>
-                  <CheckCircle className="h-6 w-6 text-gray-400" />
+                  <div className="p-3 bg-green-100 rounded-lg">
+                    <CheckCircle className="h-6 w-6 text-green-600" />
+                  </div>
                 </div>
               </div>
               <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
                 <div className="flex items-start justify-between">
                   <div>
                     <p className="text-sm text-gray-600 mb-1">Under Review</p>
-                    <h2 className="text-3xl font-bold text-gray-900">{reviewCount}</h2>
+                    <h2 className="text-3xl font-bold text-blue-600">{reviewCount}</h2>
                   </div>
-                  <User className="h-6 w-6 text-gray-400" />
+                  <div className="p-3 bg-blue-100 rounded-lg">
+                    <User className="h-6 w-6 text-blue-600" />
+                  </div>
                 </div>
               </div>
             </div>
@@ -431,7 +444,7 @@ export default function Customers() {
                     <select
                       value={statusFilter}
                       onChange={(e) => setStatusFilter(e.target.value)}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 appearance-none"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 appearance-none"
                     >
                       <option value="">All Status</option>
                       <option value="Approved">Approved</option>
@@ -448,7 +461,7 @@ export default function Customers() {
                     <select
                       value={applicationsPerPage}
                       onChange={(e) => setApplicationsPerPage(Number(e.target.value))}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 appearance-none"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 appearance-none"
                     >
                       <option value="10">10</option>
                       <option value="20">20</option>
@@ -459,16 +472,16 @@ export default function Customers() {
                 </div>
                 <div>
                   <label className="block text-sm text-gray-700 mb-2">Submitted After</label>
-                  <input type="date" className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                  <input type="date" className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" />
                 </div>
                 <div>
                   <label className="block text-sm text-gray-700 mb-2">Submitted Before</label>
-                  <input type="date" className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                  <input type="date" className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" />
                 </div>
               </div>
               <button
                 onClick={loadApplications}
-                className="w-full mt-4 px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 transition-colors font-medium"
+                className="w-full mt-4 px-4 py-2 bg-gray-900 text-white rounded-lg hover:bg-gray-800 transition-colors font-medium"
               >
                 Refresh
               </button>
@@ -486,23 +499,23 @@ export default function Customers() {
                         </h3>
                         <span className={`px-3 py-1 rounded-full text-xs font-medium ${
                           app.status === 'Approved'
-                            ? 'bg-green-600 text-white'
+                            ? 'bg-green-100 text-green-800 border border-green-200'
                             : app.status === 'Pending'
-                            ? 'bg-yellow-600 text-white'
+                            ? 'bg-yellow-100 text-yellow-800 border border-yellow-200'
                             : app.status === 'Under Review'
-                            ? 'bg-blue-600 text-white'
-                            : 'bg-red-600 text-white'
+                            ? 'bg-blue-100 text-blue-800 border border-blue-200'
+                            : 'bg-red-100 text-red-800 border border-red-200'
                         }`}>
                           {app.status}
                         </span>
                       </div>
                       <div className="flex gap-2">
-                        <button className="px-4 py-2 bg-gray-900 text-white rounded-md hover:bg-gray-800 transition-colors text-sm">
+                        <button className="px-4 py-2 bg-gray-900 text-white rounded-lg hover:bg-gray-800 transition-colors text-sm font-medium">
                           View
                         </button>
                         <button
                           onClick={() => handleSendEmail(app)}
-                          className="flex items-center gap-2 px-4 py-2 bg-gray-900 text-white rounded-md hover:bg-gray-800 transition-colors text-sm"
+                          className="flex items-center gap-2 px-4 py-2 bg-gray-900 text-white rounded-lg hover:bg-gray-800 transition-colors text-sm font-medium"
                         >
                           <MessageSquare className="h-4 w-4" />
                           Message

@@ -3,7 +3,7 @@ import { useAuthChecker } from "@/hooks/useAuthChecker";
 import { ChartAreaInteractive } from "../components/charts/areaChart";
 import { ChartBarInteractive } from "../components/charts/barChart";
 import { jobOrdersApi, customersApi, appointmentsApi, inventoryApi, mechanicsApi } from "@/services/api.service";
-import { Users, Wrench, Package, Calendar, TrendingUp, AlertTriangle } from "lucide-react";
+import { Users, Wrench, Calendar, TrendingUp, AlertTriangle, UserCog, ClipboardList } from "lucide-react";
 import toast from "react-hot-toast";
 
 export default function Dashboard() {
@@ -98,7 +98,9 @@ export default function Dashboard() {
                 <p className="text-sm text-gray-600 mb-1">Total Customers</p>
                 <h2 className="text-3xl font-bold text-gray-900">{stats.totalCustomers}</h2>
               </div>
-              <Users className="h-8 w-8 text-blue-500" />
+              <div className="p-3 bg-blue-100 rounded-lg">
+                <Users className="h-6 w-6 text-blue-600" />
+              </div>
             </div>
           </div>
 
@@ -112,7 +114,9 @@ export default function Dashboard() {
                   {stats.inProgressJobs} in progress
                 </p>
               </div>
-              <Wrench className="h-8 w-8 text-green-500" />
+              <div className="p-3 bg-green-100 rounded-lg">
+                <Wrench className="h-6 w-6 text-green-600" />
+              </div>
             </div>
           </div>
 
@@ -126,7 +130,9 @@ export default function Dashboard() {
                   {stats.totalAppointments} total
                 </p>
               </div>
-              <Calendar className="h-8 w-8 text-purple-500" />
+              <div className="p-3 bg-purple-100 rounded-lg">
+                <Calendar className="h-6 w-6 text-purple-600" />
+              </div>
             </div>
           </div>
 
@@ -139,7 +145,9 @@ export default function Dashboard() {
                   ₱{stats.totalRevenue.toLocaleString()}
                 </h2>
               </div>
-              <TrendingUp className="h-8 w-8 text-yellow-500" />
+              <div className="p-3 bg-amber-100 rounded-lg">
+                <TrendingUp className="h-6 w-6 text-amber-600" />
+              </div>
             </div>
           </div>
         </div>
@@ -148,7 +156,12 @@ export default function Dashboard() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
           {/* Job Status Breakdown */}
           <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-            <h3 className="text-sm font-semibold text-gray-700 mb-3">Job Status</h3>
+            <div className="flex items-center gap-3 mb-4">
+              <div className="p-2 bg-slate-100 rounded-lg">
+                <ClipboardList className="h-5 w-5 text-slate-600" />
+              </div>
+              <h3 className="text-sm font-semibold text-gray-700">Job Status</h3>
+            </div>
             <div className="space-y-2">
               <div className="flex justify-between items-center">
                 <span className="text-sm text-gray-600">Pending</span>
@@ -167,9 +180,11 @@ export default function Dashboard() {
 
           {/* Low Stock Alert */}
           <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-            <div className="flex items-start justify-between mb-3">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="p-2 bg-orange-100 rounded-lg">
+                <AlertTriangle className="h-5 w-5 text-orange-600" />
+              </div>
               <h3 className="text-sm font-semibold text-gray-700">Inventory Alert</h3>
-              <AlertTriangle className="h-5 w-5 text-orange-500" />
             </div>
             <div>
               <p className="text-2xl font-bold text-gray-900">{stats.lowStockItems}</p>
@@ -179,9 +194,11 @@ export default function Dashboard() {
 
           {/* Active Mechanics */}
           <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-            <div className="flex items-start justify-between mb-3">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="p-2 bg-indigo-100 rounded-lg">
+                <UserCog className="h-5 w-5 text-indigo-600" />
+              </div>
               <h3 className="text-sm font-semibold text-gray-700">Active Mechanics</h3>
-              <Package className="h-5 w-5 text-indigo-500" />
             </div>
             <div>
               <p className="text-2xl font-bold text-gray-900">{stats.activeMechanics}</p>

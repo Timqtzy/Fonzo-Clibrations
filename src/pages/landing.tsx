@@ -68,31 +68,31 @@ export default function Landing() {
           <div className="hidden md:flex items-center space-x-1">
             <a
               href="#about"
-              className="px-3 py-2 text-sm font-medium text-foreground hover:bg-accent hover:text-accent-foreground rounded-md transition-colors"
+              className="px-3 py-2 text-sm font-medium text-foreground hover:bg-accent hover:text-accent-foreground rounded-lg transition-colors"
             >
               About
             </a>
             <a
               href="#services"
-              className="px-3 py-2 text-sm font-medium text-foreground hover:bg-accent hover:text-accent-foreground rounded-md transition-colors"
+              className="px-3 py-2 text-sm font-medium text-foreground hover:bg-accent hover:text-accent-foreground rounded-lg transition-colors"
             >
               Services
             </a>
             <a
               href="#pricing"
-              className="px-3 py-2 text-sm font-medium text-foreground hover:bg-accent hover:text-accent-foreground rounded-md transition-colors"
+              className="px-3 py-2 text-sm font-medium text-foreground hover:bg-accent hover:text-accent-foreground rounded-lg transition-colors"
             >
               Pricing
             </a>
             <a
               href="#contact"
-              className="px-3 py-2 text-sm font-medium text-foreground hover:bg-accent hover:text-accent-foreground rounded-md transition-colors"
+              className="px-3 py-2 text-sm font-medium text-foreground hover:bg-accent hover:text-accent-foreground rounded-lg transition-colors"
             >
               Contact
             </a>
             <a
               href="#booking"
-              className="px-3 py-2 text-sm font-medium text-foreground hover:bg-accent hover:text-accent-foreground rounded-md transition-colors"
+              className="px-3 py-2 text-sm font-medium text-foreground hover:bg-accent hover:text-accent-foreground rounded-lg transition-colors"
             >
               Book Now
             </a>

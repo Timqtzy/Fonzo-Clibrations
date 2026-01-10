@@ -1,5 +1,12 @@
 import { useState, useEffect } from 'react';
-import { Settings, ShoppingCart, Clock, Home, Filter, Plus, Eye, Pencil, Trash2, ChevronDown, ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight } from "lucide-react";
+import { Package, DollarSign, AlertTriangle, Boxes, Filter, Plus, Eye, Pencil, Trash2, ChevronDown, ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight } from "lucide-react";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { inventoryApi, categoriesApi, activityLogsApi } from '@/services/api.service';
 import type { Database } from '@/types/database.types';
 import toast from 'react-hot-toast';
@@ -166,9 +173,8 @@ export default function InventorySupplies() {
                 <p className="text-sm text-gray-600 mb-1">Total Parts</p>
                 <h2 className="text-3xl font-bold text-gray-900">{data.length}</h2>
               </div>
-              <div className="flex gap-1">
-                <Settings className="h-6 w-6 text-gray-400" />
-                <Settings className="h-5 w-5 text-gray-400" />
+              <div className="p-3 bg-gray-100 rounded-lg">
+                <Package className="h-6 w-6 text-gray-600" />
               </div>
             </div>
           </div>
@@ -182,7 +188,9 @@ export default function InventorySupplies() {
                   ₱{data.reduce((sum, item) => sum + ((item.unit_price || 0) * item.quantity), 0).toLocaleString()}
                 </h2>
               </div>
-              <ShoppingCart className="h-6 w-6 text-green-500" />
+              <div className="p-3 bg-green-100 rounded-lg">
+                <DollarSign className="h-6 w-6 text-green-600" />
+              </div>
             </div>
           </div>
 
@@ -195,7 +203,9 @@ export default function InventorySupplies() {
                   {data.filter(item => item.quantity <= item.minimum_stock).length}
                 </h2>
               </div>
-              <Clock className="h-6 w-6 text-orange-500" />
+              <div className="p-3 bg-orange-100 rounded-lg">
+                <AlertTriangle className="h-6 w-6 text-orange-600" />
+              </div>
             </div>
           </div>
 
@@ -204,11 +214,13 @@ export default function InventorySupplies() {
             <div className="flex items-start justify-between">
               <div>
                 <p className="text-sm text-gray-600 mb-1">Quantity Available</p>
-                <h2 className="text-3xl font-bold text-gray-900">
+                <h2 className="text-3xl font-bold text-blue-600">
                   {data.reduce((sum, item) => sum + item.quantity, 0)}
                 </h2>
               </div>
-              <Home className="h-6 w-6 text-gray-400" />
+              <div className="p-3 bg-blue-100 rounded-lg">
+                <Boxes className="h-6 w-6 text-blue-600" />
+              </div>
             </div>
           </div>
         </div>
@@ -220,14 +232,14 @@ export default function InventorySupplies() {
             <div className="relative inline-block">
               <button
                 onClick={() => setShowCategoryDropdown(!showCategoryDropdown)}
-                className="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-md bg-white hover:bg-gray-50 transition-colors"
+                className="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg bg-white hover:bg-gray-50 transition-colors"
               >
                 <Filter className="h-4 w-4" />
                 <span className="text-sm">{selectedCategory}</span>
                 <ChevronDown className="h-4 w-4" />
               </button>
               {showCategoryDropdown && (
-                <div className="absolute top-full left-0 mt-1 w-48 bg-white border border-gray-300 rounded-md shadow-lg z-10">
+                <div className="absolute top-full left-0 mt-1 w-48 bg-white border border-gray-300 rounded-lg shadow-lg z-10">
                   <button
                     onClick={() => handleCategorySelect("All Categories")}
                     className={`w-full text-left px-4 py-2 text-sm hover:bg-gray-100 transition-colors ${
@@ -252,7 +264,7 @@ export default function InventorySupplies() {
             </div>
             <button
               onClick={() => setShowCreateModal(true)}
-              className="flex items-center gap-2 px-4 py-2 bg-gray-900 text-white rounded-md hover:bg-gray-800 transition-colors"
+              className="flex items-center gap-2 px-6 py-2 bg-gray-900 text-white rounded-lg hover:bg-gray-800 transition-colors font-medium"
             >
               <Plus className="h-4 w-4" />
               <span className="text-sm font-medium">Add</span>
@@ -264,16 +276,16 @@ export default function InventorySupplies() {
             <table className="w-full">
               <thead className="bg-gray-50 border-b border-gray-200">
                 <tr>
-                  <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700">No.</th>
-                  <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700">Parts Name</th>
-                  <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700">Quantity</th>
-                  <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700">Unit Price</th>
-                  <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700">Total Value</th>
-                  <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700">Minimum Stock</th>
-                  <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700">Category</th>
-                  <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700">Supplier</th>
-                  <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700">Status</th>
-                  <th className="px-4 py-3 text-center text-sm font-semibold text-gray-700">Actions</th>
+                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">No.</th>
+                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Parts Name</th>
+                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Quantity</th>
+                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Unit Price</th>
+                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Total Value</th>
+                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Minimum Stock</th>
+                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Category</th>
+                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Supplier</th>
+                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Status</th>
+                  <th className="px-4 py-3 text-center text-xs font-semibold text-gray-700 uppercase tracking-wider">Actions</th>
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
@@ -326,19 +338,17 @@ export default function InventorySupplies() {
           {/* Pagination */}
           <div className="px-4 py-3 border-t border-gray-200 flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <select
-                value={itemsPerPage}
-                onChange={(e) => {
-                  setItemsPerPage(Number(e.target.value));
-                  setCurrentPage(1);
-                }}
-                className="px-3 py-1.5 border border-gray-300 rounded text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-              >
-                <option value={10}>10</option>
-                <option value={20}>20</option>
-                <option value={50}>50</option>
-                <option value={100}>100</option>
-              </select>
+<Select value={String(itemsPerPage)} onValueChange={(value) => { setItemsPerPage(Number(value)); setCurrentPage(1); }}>
+                <SelectTrigger className="w-[80px] rounded-lg">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent className="rounded-xl">
+                  <SelectItem value="10" className="rounded-lg">10</SelectItem>
+                  <SelectItem value="20" className="rounded-lg">20</SelectItem>
+                  <SelectItem value="50" className="rounded-lg">50</SelectItem>
+                  <SelectItem value="100" className="rounded-lg">100</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
             <div className="flex items-center gap-2">
               <button

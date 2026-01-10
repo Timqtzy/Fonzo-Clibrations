@@ -122,6 +122,11 @@
   a[href] {
     cursor: pointer;
   }
+  /* Password reveal icon - white for dark mode */
+  .dark input[type="password"]::-ms-reveal,
+  input[type="password"].text-white::-ms-reveal {
+    filter: invert(1);
+  }
 }
 
 /* React DatePicker Custom Styles */

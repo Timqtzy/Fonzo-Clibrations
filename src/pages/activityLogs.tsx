@@ -1,5 +1,33 @@
 import { useState, useEffect, useCallback } from 'react';
-import { Activity, Filter, Search, ChevronLeft, ChevronRight, User, Calendar, Tag } from 'lucide-react';
+import {
+  Activity,
+  Filter,
+  Search,
+  ChevronLeft,
+  ChevronRight,
+  User,
+  Calendar,
+  Tag,
+  Plus,
+  Pencil,
+  Trash2,
+  Wrench,
+  Package,
+  BarChart3,
+  Car,
+  ShoppingCart,
+  Users,
+  FileText,
+  CalendarCheck,
+  UserCog
+} from 'lucide-react';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { activityLogsApi } from '@/services/api.service';
 import { useAuthChecker } from '@/hooks/useAuthChecker';
 import toast from 'react-hot-toast';
@@ -29,7 +57,7 @@ export default function ActivityLogs() {
   const [filterEntityType, setFilterEntityType] = useState<string>('all');
   const [filterRole, setFilterRole] = useState<string>('all');
   const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage] = useState(50);
+  const [itemsPerPage, setItemsPerPage] = useState(10);
 
   useEffect(() => {
     if (isAuthenticated) {
@@ -121,19 +149,20 @@ export default function ActivityLogs() {
   };
 
   const getEntityIcon = (entityType: string) => {
-    const icons: Record<string, string> = {
-      customer: '👤',
-      job_order: '🔧',
-      supplier: '📦',
-      inventory: '📊',
-      mechanic: '👨‍🔧',
-      appointment: '📅',
-      vehicle: '🚗',
-      purchase_order: '🛒',
-      profile: '👥',
+    const iconMap: Record<string, React.ReactNode> = {
+      customer: <User className="h-4 w-4 text-blue-500" />,
+      job_order: <Wrench className="h-4 w-4 text-orange-500" />,
+      supplier: <Package className="h-4 w-4 text-purple-500" />,
+      inventory: <BarChart3 className="h-4 w-4 text-green-500" />,
+      mechanic: <UserCog className="h-4 w-4 text-indigo-500" />,
+      appointment: <CalendarCheck className="h-4 w-4 text-pink-500" />,
+      vehicle: <Car className="h-4 w-4 text-cyan-500" />,
+      purchase_order: <ShoppingCart className="h-4 w-4 text-amber-500" />,
+      profile: <Users className="h-4 w-4 text-teal-500" />,
+      work_assignment: <Wrench className="h-4 w-4 text-slate-500" />,
     };
 
-    return icons[entityType] || '📄';
+    return iconMap[entityType] || <FileText className="h-4 w-4 text-gray-500" />;
   };
 
   // Get unique entity types and roles for filters
@@ -176,7 +205,9 @@ export default function ActivityLogs() {
                 <p className="text-sm text-gray-600">Total Activities</p>
                 <p className="text-2xl font-bold text-gray-900">{logs.length}</p>
               </div>
-              <Activity className="h-8 w-8 text-blue-500" />
+              <div className="p-2 bg-gray-100 rounded-lg">
+                <Activity className="h-6 w-6 text-gray-600" />
+              </div>
             </div>
           </div>
 
@@ -188,7 +219,9 @@ export default function ActivityLogs() {
                   {logs.filter((l) => l.action === 'create').length}
                 </p>
               </div>
-              <span className="text-3xl">✨</span>
+              <div className="p-2 bg-green-100 rounded-lg">
+                <Plus className="h-6 w-6 text-green-600" />
+              </div>
             </div>
           </div>
 
@@ -200,7 +233,9 @@ export default function ActivityLogs() {
                   {logs.filter((l) => l.action === 'update').length}
                 </p>
               </div>
-              <span className="text-3xl">✏️</span>
+              <div className="p-2 bg-blue-100 rounded-lg">
+                <Pencil className="h-6 w-6 text-blue-600" />
+              </div>
             </div>
           </div>
 
@@ -212,7 +247,9 @@ export default function ActivityLogs() {
                   {logs.filter((l) => l.action === 'delete').length}
                 </p>
               </div>
-              <span className="text-3xl">🗑️</span>
+              <div className="p-2 bg-red-100 rounded-lg">
+                <Trash2 className="h-6 w-6 text-red-600" />
+              </div>
             </div>
           </div>
         </div>
@@ -228,7 +265,7 @@ export default function ActivityLogs() {
                 placeholder="Search logs..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
               />
             </div>
 
@@ -238,7 +275,7 @@ export default function ActivityLogs() {
               <select
                 value={filterAction}
                 onChange={(e) => setFilterAction(e.target.value)}
-                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
               >
                 <option value="all">All Actions</option>
                 <option value="create">Create</option>
@@ -254,7 +291,7 @@ export default function ActivityLogs() {
               <select
                 value={filterEntityType}
                 onChange={(e) => setFilterEntityType(e.target.value)}
-                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
               >
                 <option value="all">All Types</option>
                 {entityTypes.map((type) => (
@@ -271,7 +308,7 @@ export default function ActivityLogs() {
               <select
                 value={filterRole}
                 onChange={(e) => setFilterRole(e.target.value)}
-                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
               >
                 <option value="all">All Roles</option>
                 {roles.map((role) => (
@@ -290,12 +327,12 @@ export default function ActivityLogs() {
             <table className="w-full">
               <thead className="bg-gray-50 border-b border-gray-200">
                 <tr>
-                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase">Time</th>
-                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase">User</th>
-                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase">Role</th>
-                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase">Action</th>
-                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase">Type</th>
-                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase">Description</th>
+                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Time</th>
+                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">User</th>
+                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Role</th>
+                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Action</th>
+                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Type</th>
+                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Description</th>
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
@@ -342,10 +379,26 @@ export default function ActivityLogs() {
           </div>
 
           {/* Pagination */}
-          {filteredLogs.length > itemsPerPage && (
+          {filteredLogs.length > 0 && (
             <div className="px-4 py-3 border-t border-gray-200 flex items-center justify-between">
-              <div className="text-sm text-gray-500">
-                Showing {startIndex + 1}-{Math.min(endIndex, filteredLogs.length)} of {filteredLogs.length}
+              <div className="flex items-center gap-4">
+                <div className="text-sm text-gray-500">
+                  Showing {startIndex + 1}-{Math.min(endIndex, filteredLogs.length)} of {filteredLogs.length}
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="text-sm text-gray-500">Rows per page:</span>
+                  <Select value={String(itemsPerPage)} onValueChange={(value) => { setItemsPerPage(Number(value)); setCurrentPage(1); }}>
+                    <SelectTrigger className="w-[80px] rounded-lg">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent className="rounded-xl">
+                      <SelectItem value="10" className="rounded-lg">10</SelectItem>
+                      <SelectItem value="25" className="rounded-lg">25</SelectItem>
+                      <SelectItem value="50" className="rounded-lg">50</SelectItem>
+                      <SelectItem value="100" className="rounded-lg">100</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
               </div>
               <div className="flex items-center gap-2">
                 <button

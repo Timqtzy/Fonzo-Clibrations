@@ -170,47 +170,47 @@ export default function AppointmentScheduling() {
         <div className="flex flex-wrap gap-3 mb-6">
           <button
             onClick={() => setStatusFilter('Upcoming')}
-            className={`px-4 py-2 border rounded-md transition-colors text-sm ${
+            className={`px-4 py-2 border rounded-lg transition-colors text-sm font-medium ${
               statusFilter === 'Upcoming'
                 ? 'bg-gray-900 text-white border-gray-900'
-                : 'bg-white border-gray-300 hover:bg-gray-50'
+                : 'bg-white border-gray-300 text-gray-700 hover:bg-gray-50'
             }`}
           >
-            Upcoming (Scheduled) <span className="ml-2 text-gray-500">{getStatusCount('Upcoming')}</span>
+            Upcoming (Scheduled) <span className="ml-2 opacity-70">{getStatusCount('Upcoming')}</span>
           </button>
           <button
             onClick={() => setStatusFilter('Past')}
-            className={`px-4 py-2 border rounded-md transition-colors text-sm ${
+            className={`px-4 py-2 border rounded-lg transition-colors text-sm font-medium ${
               statusFilter === 'Past'
                 ? 'bg-gray-900 text-white border-gray-900'
-                : 'bg-white border-gray-300 hover:bg-gray-50'
+                : 'bg-white border-gray-300 text-gray-700 hover:bg-gray-50'
             }`}
           >
-            Past (Canceled/Complete) <span className="ml-2 text-gray-500">{getStatusCount('Past')}</span>
+            Past (Canceled/Complete) <span className="ml-2 opacity-70">{getStatusCount('Past')}</span>
           </button>
           <button
             onClick={() => setStatusFilter('Pending')}
-            className={`px-4 py-2 border rounded-md transition-colors text-sm ${
+            className={`px-4 py-2 border rounded-lg transition-colors text-sm font-medium ${
               statusFilter === 'Pending'
                 ? 'bg-gray-900 text-white border-gray-900'
-                : 'bg-white border-gray-300 hover:bg-gray-50'
+                : 'bg-white border-gray-300 text-gray-700 hover:bg-gray-50'
             }`}
           >
-            Pending (Confirmed) <span className="ml-2 text-gray-500">{getStatusCount('Pending')}</span>
+            Pending (Confirmed) <span className="ml-2 opacity-70">{getStatusCount('Pending')}</span>
           </button>
           <button
             onClick={() => setStatusFilter('All')}
-            className={`px-4 py-2 border rounded-md transition-colors text-sm ${
+            className={`px-4 py-2 border rounded-lg transition-colors text-sm font-medium ${
               statusFilter === 'All'
                 ? 'bg-gray-900 text-white border-gray-900'
-                : 'bg-white border-gray-300 hover:bg-gray-50'
+                : 'bg-white border-gray-300 text-gray-700 hover:bg-gray-50'
             }`}
           >
-            All <span className="ml-2 text-gray-500">{getStatusCount('All')}</span>
+            All <span className="ml-2 opacity-70">{getStatusCount('All')}</span>
           </button>
           <button
             onClick={() => setShowCreateModal(true)}
-            className="px-4 py-2 bg-gray-900 text-white rounded-md hover:bg-gray-800 transition-colors text-sm font-medium ml-auto"
+            className="px-6 py-2 bg-gray-900 text-white rounded-lg hover:bg-gray-800 transition-colors text-sm font-medium ml-auto"
           >
             Add
           </button>
@@ -228,14 +228,14 @@ export default function AppointmentScheduling() {
                     </h3>
                     <p className="text-sm text-gray-500">{appointment.customers?.email || appointment.email}</p>
                   </div>
-                  <span className={`px-4 py-1 rounded-full text-sm font-medium ${
+                  <span className={`px-3 py-1 rounded-full text-xs font-medium ${
                     appointment.status === 'Completed'
-                      ? 'bg-green-600 text-white'
+                      ? 'bg-green-100 text-green-800 border border-green-200'
                       : appointment.status === 'Scheduled'
-                      ? 'bg-blue-600 text-white'
+                      ? 'bg-blue-100 text-blue-800 border border-blue-200'
                       : appointment.status === 'Confirmed'
-                      ? 'bg-yellow-600 text-white'
-                      : 'bg-red-600 text-white'
+                      ? 'bg-yellow-100 text-yellow-800 border border-yellow-200'
+                      : 'bg-red-100 text-red-800 border border-red-200'
                   }`}>
                     {appointment.status}
                   </span>
@@ -267,7 +267,7 @@ export default function AppointmentScheduling() {
                 <div className="flex justify-between items-center">
                   <button
                     onClick={() => handleSendEmail(appointment)}
-                    className="flex items-center gap-2 px-4 py-2 bg-gray-900 text-white rounded-md hover:bg-gray-800 transition-colors text-sm"
+                    className="flex items-center gap-2 px-4 py-2 bg-gray-900 text-white rounded-lg hover:bg-gray-800 transition-colors text-sm font-medium"
                   >
                     <Mail className="h-4 w-4" />
                     Message

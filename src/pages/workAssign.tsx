@@ -1,5 +1,12 @@
 import { useState, useEffect } from 'react';
 import { Eye, Trash2, ChevronDown, ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight, Pencil } from "lucide-react";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { workAssignmentsApi, activityLogsApi } from '@/services/api.service';
 import type { Database } from '@/types/database.types';
 import toast from 'react-hot-toast';
@@ -169,7 +176,7 @@ export default function WorkAssignment() {
         <div className="flex justify-end mb-4">
           <button
             onClick={() => setShowCreateModal(true)}
-            className="px-6 py-2 bg-gray-900 text-white rounded-md hover:bg-gray-800 transition-colors font-medium"
+            className="px-6 py-2 bg-gray-900 text-white rounded-lg hover:bg-gray-800 transition-colors font-medium"
           >
             ASSIGN JOB
           </button>
@@ -181,13 +188,13 @@ export default function WorkAssignment() {
             <table className="w-full">
               <thead className="bg-gray-50 border-b border-gray-200">
                 <tr>
-                  <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700">No.</th>
-                  <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700">Work ID</th>
-                  <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700">Vehicle</th>
-                  <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700">Assigned Mechanic</th>
-                  <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700">Deadline</th>
-                  <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700">Status</th>
-                  <th className="px-4 py-3 text-center text-sm font-semibold text-gray-700">Action</th>
+                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">No.</th>
+                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Work ID</th>
+                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Vehicle</th>
+                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Assigned Mechanic</th>
+                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Deadline</th>
+                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Status</th>
+                  <th className="px-4 py-3 text-center text-xs font-semibold text-gray-700 uppercase tracking-wider">Action</th>
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
@@ -270,19 +277,17 @@ export default function WorkAssignment() {
           {/* Pagination */}
           <div className="px-4 py-3 border-t border-gray-200 flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <select
-                value={itemsPerPage}
-                onChange={(e) => {
-                  setItemsPerPage(Number(e.target.value));
-                  setCurrentPage(1);
-                }}
-                className="px-3 py-1.5 border border-gray-300 rounded text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-              >
-                <option value={10}>10</option>
-                <option value={20}>20</option>
-                <option value={50}>50</option>
-                <option value={100}>100</option>
-              </select>
+              <Select value={String(itemsPerPage)} onValueChange={(value) => { setItemsPerPage(Number(value)); setCurrentPage(1); }}>
+                <SelectTrigger className="w-[80px] rounded-lg">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent className="rounded-xl">
+                  <SelectItem value="10" className="rounded-lg">10</SelectItem>
+                  <SelectItem value="20" className="rounded-lg">20</SelectItem>
+                  <SelectItem value="50" className="rounded-lg">50</SelectItem>
+                  <SelectItem value="100" className="rounded-lg">100</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
             <div className="flex items-center gap-2">
               <button

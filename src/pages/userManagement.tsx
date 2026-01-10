@@ -1,5 +1,12 @@
 import { useState, useEffect } from 'react';
-import { Eye, Pencil, Trash2, UserPlus } from "lucide-react";
+import { Eye, Pencil, Trash2, UserPlus, ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight, Users, Shield, Briefcase, UserCog, UserCheck } from "lucide-react";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { profilesApi } from '@/services/api.service';
 import type { Database } from '@/types/database.types';
 import toast from 'react-hot-toast';
@@ -15,6 +22,8 @@ export default function UserManagement() {
   const [error, setError] = useState<string | null>(null);
   const [roleFilter, setRoleFilter] = useState<string>('');
   const [searchQuery, setSearchQuery] = useState('');
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(10);
 
   // Modal states
   const [showCreateModal, setShowCreateModal] = useState(false);
@@ -105,6 +114,17 @@ export default function UserManagement() {
     return matchesRole && matchesSearch;
   });
 
+  // Pagination
+  const totalPages = Math.ceil(filteredUsers.length / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+  const currentUsers = filteredUsers.slice(startIndex, endIndex);
+
+  // Reset to page 1 when filters change
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [roleFilter, searchQuery]);
+
   const getRoleBadgeColor = (role: string) => {
     switch (role) {
       case 'admin':
@@ -159,6 +179,9 @@ export default function UserManagement() {
                 <p className="text-sm text-gray-600 mb-1">Total Users</p>
                 <h2 className="text-3xl font-bold text-gray-900">{totalUsers}</h2>
               </div>
+              <div className="p-3 bg-gray-100 rounded-lg">
+                <Users className="h-6 w-6 text-gray-600" />
+              </div>
             </div>
           </div>
           <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
@@ -166,6 +189,9 @@ export default function UserManagement() {
               <div>
                 <p className="text-sm text-gray-600 mb-1">Admins</p>
                 <h2 className="text-3xl font-bold text-purple-600">{adminCount}</h2>
+              </div>
+              <div className="p-3 bg-purple-100 rounded-lg">
+                <Shield className="h-6 w-6 text-purple-600" />
               </div>
             </div>
           </div>
@@ -175,6 +201,9 @@ export default function UserManagement() {
                 <p className="text-sm text-gray-600 mb-1">Staff</p>
                 <h2 className="text-3xl font-bold text-blue-600">{staffCount}</h2>
               </div>
+              <div className="p-3 bg-blue-100 rounded-lg">
+                <Briefcase className="h-6 w-6 text-blue-600" />
+              </div>
             </div>
           </div>
           <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
@@ -183,13 +212,19 @@ export default function UserManagement() {
                 <p className="text-sm text-gray-600 mb-1">Mechanics</p>
                 <h2 className="text-3xl font-bold text-green-600">{mechanicCount}</h2>
               </div>
+              <div className="p-3 bg-green-100 rounded-lg">
+                <UserCog className="h-6 w-6 text-green-600" />
+              </div>
             </div>
           </div>
           <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
             <div className="flex items-start justify-between">
               <div>
                 <p className="text-sm text-gray-600 mb-1">Active</p>
-                <h2 className="text-3xl font-bold text-gray-900">{activeCount}</h2>
+                <h2 className="text-3xl font-bold text-teal-600">{activeCount}</h2>
+              </div>
+              <div className="p-3 bg-teal-100 rounded-lg">
+                <UserCheck className="h-6 w-6 text-teal-600" />
               </div>
             </div>
           </div>
@@ -206,7 +241,7 @@ export default function UserManagement() {
                   placeholder="Search by name, email, or phone..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
               </div>
               <div className="w-full md:w-48">
@@ -214,7 +249,7 @@ export default function UserManagement() {
                 <select
                   value={roleFilter}
                   onChange={(e) => setRoleFilter(e.target.value)}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                 >
                   <option value="">All Roles</option>
                   <option value="admin">Admin</option>
@@ -225,7 +260,7 @@ export default function UserManagement() {
               </div>
               <button
                 onClick={() => setShowCreateModal(true)}
-                className="px-6 py-2 bg-gray-900 text-white rounded-md hover:bg-gray-800 transition-colors font-medium flex items-center gap-2"
+                className="px-6 py-2 bg-gray-900 text-white rounded-lg hover:bg-gray-800 transition-colors font-medium flex items-center gap-2"
               >
                 <UserPlus className="h-4 w-4" />
                 Add User
@@ -248,8 +283,8 @@ export default function UserManagement() {
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
-                {filteredUsers.length > 0 ? (
-                  filteredUsers.map((user) => (
+                {currentUsers.length > 0 ? (
+                  currentUsers.map((user) => (
                     <tr key={user.id} className="hover:bg-gray-50 transition-colors">
                       <td className="px-4 py-4 text-sm font-medium text-gray-900">{user.full_name}</td>
                       <td className="px-4 py-4 text-sm text-gray-900">{user.email || 'N/A'}</td>
@@ -313,9 +348,58 @@ export default function UserManagement() {
           </div>
 
           {/* Footer */}
-          <div className="px-4 py-3 border-t border-gray-200 flex items-center justify-between">
-            <div className="text-sm text-gray-500">
-              Showing {filteredUsers.length} of {users.length} users
+          <div className="px-4 py-3 border-t border-gray-200 flex flex-col md:flex-row gap-4 items-center justify-between">
+            <div className="flex items-center gap-4">
+              <div className="text-sm text-gray-500">
+                Showing {startIndex + 1}-{Math.min(endIndex, filteredUsers.length)} of {filteredUsers.length} users
+              </div>
+              <div className="flex items-center gap-2">
+                <span className="text-sm text-gray-500">Rows:</span>
+                <Select value={String(itemsPerPage)} onValueChange={(value) => { setItemsPerPage(Number(value)); setCurrentPage(1); }}>
+                  <SelectTrigger className="w-[80px] rounded-lg">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent className="rounded-xl">
+                    <SelectItem value="10" className="rounded-lg">10</SelectItem>
+                    <SelectItem value="25" className="rounded-lg">25</SelectItem>
+                    <SelectItem value="50" className="rounded-lg">50</SelectItem>
+                    <SelectItem value="100" className="rounded-lg">100</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => setCurrentPage(1)}
+                disabled={currentPage === 1}
+                className="p-1 border border-gray-300 rounded hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                <ChevronsLeft className="h-4 w-4" />
+              </button>
+              <button
+                onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
+                disabled={currentPage === 1}
+                className="p-1 border border-gray-300 rounded hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                <ChevronLeft className="h-4 w-4" />
+              </button>
+              <span className="text-sm text-gray-700 px-2">
+                {currentPage} of {totalPages || 1}
+              </span>
+              <button
+                onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
+                disabled={currentPage === totalPages || totalPages === 0}
+                className="p-1 border border-gray-300 rounded hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                <ChevronRight className="h-4 w-4" />
+              </button>
+              <button
+                onClick={() => setCurrentPage(totalPages)}
+                disabled={currentPage === totalPages || totalPages === 0}
+                className="p-1 border border-gray-300 rounded hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                <ChevronsRight className="h-4 w-4" />
+              </button>
             </div>
           </div>
         </div>

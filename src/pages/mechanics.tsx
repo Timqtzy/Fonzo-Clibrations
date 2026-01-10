@@ -1,6 +1,13 @@
 import { useState, useEffect } from 'react';
-import {  Pencil, Trash2, ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight } from "lucide-react";
+import { Pencil, Trash2, ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight } from "lucide-react";
 import { mechanicsApi, activityLogsApi } from '@/services/api.service';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import type { Database } from '@/types/database.types';
 import toast from 'react-hot-toast';
 import { MechanicFormModal } from '@/components/modals/MechanicFormModal';
@@ -123,12 +130,12 @@ export default function MechanicsTable() {
         </section>
 
         <div className="flex justify-end gap-3 mb-4">
-          <button className="px-6 py-2 bg-white border border-gray-300 rounded-md hover:bg-gray-50 transition-colors font-medium text-gray-900">
+          <button className="px-6 py-2 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors font-medium text-gray-700">
             VIEW PERFORMANCE
           </button>
           <button
             onClick={() => setShowCreateModal(true)}
-            className="px-6 py-2 bg-gray-900 text-white rounded-md hover:bg-gray-800 transition-colors font-medium"
+            className="px-6 py-2 bg-gray-900 text-white rounded-lg hover:bg-gray-800 transition-colors font-medium"
           >
             CREATE
           </button>
@@ -140,14 +147,14 @@ export default function MechanicsTable() {
             <table className="w-full">
               <thead className="bg-gray-50 border-b border-gray-200">
                 <tr>
-                  <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700">No.</th>
-                  <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700">ID</th>
-                  <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700">Full Name</th>
-                  <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700">Role</th>
-                  <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700">Jobs Completed</th>
-                  <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700">Current Jobs</th>
-                  <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700">Efficiency</th>
-                  <th className="px-4 py-3 text-center text-sm font-semibold text-gray-700">Action</th>
+                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">No.</th>
+                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">ID</th>
+                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Full Name</th>
+                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Role</th>
+                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Jobs Completed</th>
+                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Current Jobs</th>
+                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Efficiency</th>
+                  <th className="px-4 py-3 text-center text-xs font-semibold text-gray-700 uppercase tracking-wider">Action</th>
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
@@ -187,19 +194,17 @@ export default function MechanicsTable() {
           {/* Pagination */}
           <div className="px-4 py-3 border-t border-gray-200 flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <select
-                value={itemsPerPage}
-                onChange={(e) => {
-                  setItemsPerPage(Number(e.target.value));
-                  setCurrentPage(1);
-                }}
-                className="px-3 py-1.5 border border-gray-300 rounded text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-              >
-                <option value={10}>10</option>
-                <option value={20}>20</option>
-                <option value={50}>50</option>
-                <option value={100}>100</option>
-              </select>
+              <Select value={String(itemsPerPage)} onValueChange={(value) => { setItemsPerPage(Number(value)); setCurrentPage(1); }}>
+                <SelectTrigger className="w-[80px] rounded-lg">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent className="rounded-xl">
+                  <SelectItem value="10" className="rounded-lg">10</SelectItem>
+                  <SelectItem value="20" className="rounded-lg">20</SelectItem>
+                  <SelectItem value="50" className="rounded-lg">50</SelectItem>
+                  <SelectItem value="100" className="rounded-lg">100</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
             <div className="flex items-center gap-2">
               <button

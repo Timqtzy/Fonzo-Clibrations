@@ -1,6 +1,13 @@
 import { useState, useEffect } from 'react';
-import { Eye, Pencil, Trash2, ChevronDown } from "lucide-react";
+import { Eye, Pencil, Trash2, ChevronDown, ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight } from "lucide-react";
 import { jobOrdersApi, activityLogsApi } from '@/services/api.service';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import type { Database } from '@/types/database.types';
 import toast from 'react-hot-toast';
 import { JobOrderFormModal } from '@/components/modals/JobOrderFormModal';
@@ -20,6 +27,8 @@ export default function CustomerDataTable() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [filter, setFilter] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(10);
 
   // Modal states
   const [showCreateModal, setShowCreateModal] = useState(false);
@@ -63,6 +72,17 @@ export default function CustomerDataTable() {
       notes.toLowerCase().includes(filter.toLowerCase()) ||
       jobOrderId.toLowerCase().includes(filter.toLowerCase());
   });
+
+  // Pagination
+  const totalPages = Math.ceil(filteredData.length / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+  const currentData = filteredData.slice(startIndex, endIndex);
+
+  // Reset to page 1 when filter changes
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [filter]);
 
   const handleStatusChange = async (id: string, newStatus: string) => {
     try {
@@ -177,7 +197,7 @@ export default function CustomerDataTable() {
         <div className="flex justify-end mb-4">
           <button
             onClick={() => setShowCreateModal(true)}
-            className="px-6 py-2 bg-gray-900 text-white rounded-md hover:bg-gray-800 transition-colors font-medium"
+            className="px-6 py-2 bg-gray-900 text-white rounded-lg hover:bg-gray-800 transition-colors font-medium"
           >
             Add Order
           </button>
@@ -191,7 +211,7 @@ export default function CustomerDataTable() {
               placeholder="Search by name, ID, or contact..."
               value={filter}
               onChange={(e) => setFilter(e.target.value)}
-              className="w-full max-w-sm px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full max-w-sm px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
 
@@ -214,10 +234,10 @@ export default function CustomerDataTable() {
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
-              {filteredData.length > 0 ? (
-                filteredData.map((order, index) => (
+              {currentData.length > 0 ? (
+                currentData.map((order, index) => (
                   <tr key={order.id} className="hover:bg-gray-50 transition-colors">
-                    <td className="px-4 py-4 text-sm text-gray-900">{index + 1}</td>
+                    <td className="px-4 py-4 text-sm text-gray-900">{startIndex + index + 1}</td>
                     <td className="px-4 py-4 text-sm text-gray-900">{order.id.substring(0, 8)}</td>
                     <td className="px-4 py-4 text-sm text-gray-900">{order.customers?.full_name || 'N/A'}</td>
                     <td className="px-4 py-4 text-sm text-gray-900">{order.customers?.contact_no || 'N/A'}</td>
@@ -292,13 +312,63 @@ export default function CustomerDataTable() {
         </div>
 
         {/* Footer */}
-        <div className="px-4 py-3 border-t border-gray-200 flex items-center justify-between">
-          <div className="text-sm text-gray-500">
-            Showing {filteredData.length} of {data.length} entries
+        <div className="px-4 py-3 border-t border-gray-200 flex flex-col md:flex-row gap-4 items-center justify-between">
+          <div className="flex items-center gap-4">
+            <div className="text-sm text-gray-500">
+              Showing {startIndex + 1}-{Math.min(endIndex, filteredData.length)} of {filteredData.length} entries
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="text-sm text-gray-500">Rows:</span>
+              <Select value={String(itemsPerPage)} onValueChange={(value) => { setItemsPerPage(Number(value)); setCurrentPage(1); }}>
+                <SelectTrigger className="w-[80px] rounded-lg">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent className="rounded-xl">
+                  <SelectItem value="10" className="rounded-lg">10</SelectItem>
+                  <SelectItem value="25" className="rounded-lg">25</SelectItem>
+                  <SelectItem value="50" className="rounded-lg">50</SelectItem>
+                  <SelectItem value="100" className="rounded-lg">100</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
           </div>
-          <div className="text-sm font-semibold text-gray-900">
-            Total Revenue: <span className="text-green-600">₱{data.filter(order => order.status !== 'Cancelled').reduce((sum, order) => sum + (order.total_cost || 0), 0).toLocaleString()}</span>
-            <span className="text-xs text-gray-500 ml-2">(excluding cancelled)</span>
+          <div className="flex items-center gap-4">
+            <div className="text-sm font-semibold text-gray-900">
+              Revenue: <span className="text-green-600">₱{data.filter(order => order.status !== 'Cancelled').reduce((sum, order) => sum + (order.total_cost || 0), 0).toLocaleString()}</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => setCurrentPage(1)}
+                disabled={currentPage === 1}
+                className="p-1 border border-gray-300 rounded hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                <ChevronsLeft className="h-4 w-4" />
+              </button>
+              <button
+                onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
+                disabled={currentPage === 1}
+                className="p-1 border border-gray-300 rounded hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                <ChevronLeft className="h-4 w-4" />
+              </button>
+              <span className="text-sm text-gray-700 px-2">
+                {currentPage} of {totalPages || 1}
+              </span>
+              <button
+                onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
+                disabled={currentPage === totalPages || totalPages === 0}
+                className="p-1 border border-gray-300 rounded hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                <ChevronRight className="h-4 w-4" />
+              </button>
+              <button
+                onClick={() => setCurrentPage(totalPages)}
+                disabled={currentPage === totalPages || totalPages === 0}
+                className="p-1 border border-gray-300 rounded hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                <ChevronsRight className="h-4 w-4" />
+              </button>
+            </div>
           </div>
         </div>
 
