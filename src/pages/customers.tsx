@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Eye, Pencil, Trash2, ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight, ChevronDown, FileText, Lightbulb, CheckCircle, User, MessageSquare } from "lucide-react";
+import { Eye, Pencil, Trash2, ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight, FileText, Lightbulb, CheckCircle, User, MessageSquare } from "lucide-react";
 import {
   Select,
   SelectContent,

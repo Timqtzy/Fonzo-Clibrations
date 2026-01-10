@@ -126,7 +126,7 @@ export default function Login() {
                 id="email"
                 type="email"
                 placeholder="name@company.com"
-                className="h-12 bg-white/5 border-white/10 text-white placeholder:text-gray-500 focus:border-white focus:ring-white/20"
+                className="h-12 bg-white/5 border-white/10 text-white placeholder:text-gray-500 focus:border-white focus:ring-white/20 selection:bg-blue-500 selection:text-white"
                 required
                 onChange={(e) => setEmail(e.target.value)}
                 value={email}
@@ -154,7 +154,7 @@ export default function Login() {
                 id="password"
                 type="password"
                 placeholder="Enter your password"
-                className="h-12 bg-white/5 border-white/10 text-white placeholder:text-gray-500 focus:border-white focus:ring-white/20"
+                className="h-12 bg-white/5 border-white/10 text-white placeholder:text-gray-500 focus:border-white focus:ring-white/20 selection:bg-blue-500 selection:text-white"
                 required
                 onChange={(e) => setPassword(e.target.value)}
                 value={password}
@@ -278,7 +278,7 @@ export default function Login() {
                     placeholder="name@company.com"
                     value={forgotEmail}
                     onChange={(e) => setForgotEmail(e.target.value)}
-                    className="h-12 bg-white/5 border-white/10 text-white placeholder:text-gray-500 focus:border-white focus:ring-white/20"
+                    className="h-12 bg-white/5 border-white/10 text-white placeholder:text-gray-500 focus:border-white focus:ring-white/20 selection:bg-blue-500 selection:text-white"
                     disabled={forgotLoading}
                   />
                 </div>

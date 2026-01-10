@@ -127,6 +127,27 @@
   input[type="password"].text-white::-ms-reveal {
     filter: invert(1);
   }
+  /* Text selection styles */
+  ::selection {
+    background-color: rgba(59, 130, 246, 0.5);
+    color: inherit;
+  }
+  /* Selection for white text inputs (dark backgrounds) */
+  .text-white::selection,
+  .text-white *::selection,
+  input.text-white::selection,
+  input[class*="text-white"]::selection,
+  textarea[class*="text-white"]::selection {
+    background-color: rgba(255, 255, 255, 0.35);
+    color: white;
+  }
+  /* Ensure inputs have proper caret color on dark backgrounds */
+  input.text-white,
+  input[class*="text-white"],
+  textarea.text-white,
+  textarea[class*="text-white"] {
+    caret-color: white;
+  }
 }
 
 /* React DatePicker Custom Styles */

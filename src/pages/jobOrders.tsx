@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Eye, Pencil, Trash2, ChevronDown, ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight } from "lucide-react";
+import { Eye, Pencil, Trash2, ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight } from "lucide-react";
 import { jobOrdersApi, activityLogsApi } from '@/services/api.service';
 import {
   Select,
