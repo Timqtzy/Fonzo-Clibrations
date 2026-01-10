@@ -2,6 +2,13 @@ import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Calendar } from "lucide-react";
 import supabase from "@/helper/supabaseClient";
 import toast from "react-hot-toast";
@@ -282,21 +289,19 @@ export function BookingForm() {
               <Label htmlFor="serviceType" className="text-sm font-medium text-foreground">
                 Service Type <span className="text-destructive">*</span>
               </Label>
-              <select
-                id="serviceType"
-                name="serviceType"
-                value={formData.serviceType}
-                onChange={handleInputChange}
-                required
-                className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 text-foreground"
-              >
-                <option value="">Select a service</option>
-                {serviceTypes.map((service) => (
-                  <option key={service} value={service}>
-                    {service}
-                  </option>
-                ))}
-              </select>
+              <Select value={formData.serviceType || "none"} onValueChange={(value) => setFormData(prev => ({ ...prev, serviceType: value === "none" ? "" : value }))}>
+                <SelectTrigger className="w-full rounded-lg">
+                  <SelectValue placeholder="Select a service" />
+                </SelectTrigger>
+                <SelectContent className="rounded-xl">
+                  <SelectItem value="none" className="rounded-lg">Select a service</SelectItem>
+                  {serviceTypes.map((service) => (
+                    <SelectItem key={service} value={service} className="rounded-lg">
+                      {service}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
 
             {/* Preferred Date */}
@@ -324,21 +329,19 @@ export function BookingForm() {
               <Label htmlFor="preferredTime" className="text-sm font-medium text-foreground">
                 Preferred Time <span className="text-destructive">*</span>
               </Label>
-              <select
-                id="preferredTime"
-                name="preferredTime"
-                value={formData.preferredTime}
-                onChange={handleInputChange}
-                required
-                className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 text-foreground"
-              >
-                <option value="">Select a time</option>
-                {timeSlots.map((time) => (
-                  <option key={time} value={time}>
-                    {time}
-                  </option>
-                ))}
-              </select>
+              <Select value={formData.preferredTime || "none"} onValueChange={(value) => setFormData(prev => ({ ...prev, preferredTime: value === "none" ? "" : value }))}>
+                <SelectTrigger className="w-full rounded-lg">
+                  <SelectValue placeholder="Select a time" />
+                </SelectTrigger>
+                <SelectContent className="rounded-xl">
+                  <SelectItem value="none" className="rounded-lg">Select a time</SelectItem>
+                  {timeSlots.map((time) => (
+                    <SelectItem key={time} value={time} className="rounded-lg">
+                      {time}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
 
             {/* Message (optional) */}

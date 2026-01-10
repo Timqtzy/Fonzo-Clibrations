@@ -182,8 +182,14 @@ export default function SuppliersTable() {
 
   if (loading) {
     return (
-      <div className="w-full min-h-screen p-6 flex items-center justify-center">
-        <div className="text-lg">Loading suppliers...</div>
+      <div className="w-full min-h-[60vh] p-6 flex items-center justify-center">
+        <div className="flex flex-col items-center gap-4">
+          <div className="relative">
+            <div className="h-12 w-12 rounded-full border-4 border-gray-200"></div>
+            <div className="absolute top-0 left-0 h-12 w-12 rounded-full border-4 border-gray-900 border-t-transparent animate-spin"></div>
+          </div>
+          <p className="text-gray-500 font-medium">Loading suppliers...</p>
+        </div>
       </div>
     );
   }
@@ -280,21 +286,31 @@ export default function SuppliersTable() {
                         {supplier.last_order_date ? new Date(supplier.last_order_date).toLocaleDateString() : 'N/A'}
                       </td>
                       <td className="px-4 py-4 text-sm">
-                        <div className="relative inline-block min-w-[120px]">
-                          <select
-                            value={supplier.status}
-                            onChange={(e) => handleStatusChange(supplier.id, e.target.value)}
-                            className="appearance-none w-full px-3 py-1.5 pr-8 rounded border border-gray-300 bg-white text-gray-900 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer"
-                          >
-                            <option value="Active">Active</option>
-                            <option value="Inactive">Inactive</option>
-                            <option value="Pending">Pending</option>
-                            <option value="Approved">Approved</option>
-                            <option value="Completed">Completed</option>
-                            <option value="Cancelled">Cancelled</option>
-                          </select>
-                          <ChevronDown className="absolute right-2 top-1/2 -translate-y-1/2 h-4 w-4 pointer-events-none text-gray-400" />
-                        </div>
+                        <Select value={supplier.status} onValueChange={(value) => handleStatusChange(supplier.id, value)}>
+                          <SelectTrigger className={`w-[120px] rounded-lg text-sm font-medium ${
+                            supplier.status === "Active"
+                              ? "bg-green-50 border-green-200 text-green-700"
+                              : supplier.status === "Inactive"
+                              ? "bg-gray-50 border-gray-200 text-gray-700"
+                              : supplier.status === "Pending"
+                              ? "bg-yellow-50 border-yellow-200 text-yellow-700"
+                              : supplier.status === "Approved"
+                              ? "bg-blue-50 border-blue-200 text-blue-700"
+                              : supplier.status === "Completed"
+                              ? "bg-purple-50 border-purple-200 text-purple-700"
+                              : "bg-red-50 border-red-200 text-red-700"
+                          }`}>
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent className="rounded-xl">
+                            <SelectItem value="Active" className="rounded-lg">Active</SelectItem>
+                            <SelectItem value="Inactive" className="rounded-lg">Inactive</SelectItem>
+                            <SelectItem value="Pending" className="rounded-lg">Pending</SelectItem>
+                            <SelectItem value="Approved" className="rounded-lg">Approved</SelectItem>
+                            <SelectItem value="Completed" className="rounded-lg">Completed</SelectItem>
+                            <SelectItem value="Cancelled" className="rounded-lg">Cancelled</SelectItem>
+                          </SelectContent>
+                        </Select>
                       </td>
                       <td className="px-4 py-4">
                         <div className="flex gap-2 justify-center">
@@ -405,30 +421,28 @@ export default function SuppliersTable() {
                           ₱{(order.total_amount || 0).toLocaleString('en-PH', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                         </td>
                         <td className="px-4 py-4 text-sm">
-                          <div className="relative inline-block min-w-[140px]">
-                            <select
-                              value={order.status}
-                              onChange={(e) => handlePurchaseOrderStatusChange(order.id, e.target.value)}
-                              className={`appearance-none w-full px-3 py-1.5 pr-8 rounded-full text-xs font-medium cursor-pointer border-2 transition-all focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                                order.status === 'Pending'
-                                  ? 'bg-yellow-100 text-yellow-700 border-yellow-200 hover:bg-yellow-200' :
-                                order.status === 'Approved'
-                                  ? 'bg-blue-100 text-blue-700 border-blue-200 hover:bg-blue-200' :
-                                order.status === 'Ordered'
-                                  ? 'bg-purple-100 text-purple-700 border-purple-200 hover:bg-purple-200' :
-                                order.status === 'Received'
-                                  ? 'bg-green-100 text-green-700 border-green-200 hover:bg-green-200' :
-                                'bg-red-100 text-red-700 border-red-200 hover:bg-red-200'
-                              }`}
-                            >
-                              <option value="Pending">Pending</option>
-                              <option value="Approved">Approved</option>
-                              <option value="Ordered">Ordered</option>
-                              <option value="Received">Received</option>
-                              <option value="Cancelled">Cancelled</option>
-                            </select>
-                            <ChevronDown className="absolute right-2 top-1/2 -translate-y-1/2 h-3 w-3 pointer-events-none" />
-                          </div>
+                          <Select value={order.status} onValueChange={(value) => handlePurchaseOrderStatusChange(order.id, value)}>
+                            <SelectTrigger className={`w-[130px] rounded-full text-xs font-medium ${
+                              order.status === 'Pending'
+                                ? 'bg-yellow-100 text-yellow-700 border-yellow-200' :
+                              order.status === 'Approved'
+                                ? 'bg-blue-100 text-blue-700 border-blue-200' :
+                              order.status === 'Ordered'
+                                ? 'bg-purple-100 text-purple-700 border-purple-200' :
+                              order.status === 'Received'
+                                ? 'bg-green-100 text-green-700 border-green-200' :
+                              'bg-red-100 text-red-700 border-red-200'
+                            }`}>
+                              <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent className="rounded-xl">
+                              <SelectItem value="Pending" className="rounded-lg">Pending</SelectItem>
+                              <SelectItem value="Approved" className="rounded-lg">Approved</SelectItem>
+                              <SelectItem value="Ordered" className="rounded-lg">Ordered</SelectItem>
+                              <SelectItem value="Received" className="rounded-lg">Received</SelectItem>
+                              <SelectItem value="Cancelled" className="rounded-lg">Cancelled</SelectItem>
+                            </SelectContent>
+                          </Select>
                         </td>
                       </tr>
                     ))

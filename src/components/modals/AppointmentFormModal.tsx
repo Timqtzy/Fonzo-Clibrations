@@ -1,5 +1,12 @@
 import { useState, useEffect } from 'react';
 import { Dialog, DialogContent, DialogBody, DialogFooter } from '@/components/ui/dialog';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { appointmentsApi } from '@/services/api.service';
 import type { Database } from '@/types/database.types';
 import toast from 'react-hot-toast';
@@ -213,16 +220,17 @@ export function AppointmentFormModal({ open, onOpenChange, onSuccess, appointmen
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     Appointment Status
                   </label>
-                  <select
-                    value={formData.status}
-                    onChange={(e) => setFormData({ ...formData, status: e.target.value })}
-                    className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 hover:border-gray-400"
-                  >
-                    <option value="Scheduled">Scheduled</option>
-                    <option value="Confirmed">Confirmed</option>
-                    <option value="Completed">Completed</option>
-                    <option value="Cancelled">Cancelled</option>
-                  </select>
+<Select value={formData.status} onValueChange={(value) => setFormData({ ...formData, status: value })}>
+                    <SelectTrigger className="w-full rounded-lg">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent className="rounded-xl">
+                      <SelectItem value="Scheduled" className="rounded-lg">Scheduled</SelectItem>
+                      <SelectItem value="Confirmed" className="rounded-lg">Confirmed</SelectItem>
+                      <SelectItem value="Completed" className="rounded-lg">Completed</SelectItem>
+                      <SelectItem value="Cancelled" className="rounded-lg">Cancelled</SelectItem>
+                    </SelectContent>
+                  </Select>
                 </div>
               </div>
             </div>

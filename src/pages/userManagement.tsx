@@ -148,8 +148,14 @@ export default function UserManagement() {
 
   if (loading) {
     return (
-      <div className="w-full min-h-screen p-6 flex items-center justify-center">
-        <div className="text-lg">Loading users...</div>
+      <div className="w-full min-h-[60vh] p-6 flex items-center justify-center">
+        <div className="flex flex-col items-center gap-4">
+          <div className="relative">
+            <div className="h-12 w-12 rounded-full border-4 border-gray-200"></div>
+            <div className="absolute top-0 left-0 h-12 w-12 rounded-full border-4 border-gray-900 border-t-transparent animate-spin"></div>
+          </div>
+          <p className="text-gray-500 font-medium">Loading users...</p>
+        </div>
       </div>
     );
   }
@@ -246,17 +252,18 @@ export default function UserManagement() {
               </div>
               <div className="w-full md:w-48">
                 <label className="block text-sm text-gray-700 mb-2">Filter by Role</label>
-                <select
-                  value={roleFilter}
-                  onChange={(e) => setRoleFilter(e.target.value)}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                >
-                  <option value="">All Roles</option>
-                  <option value="admin">Admin</option>
-                  <option value="staff">Staff</option>
-                  <option value="mechanic">Mechanic</option>
-                  <option value="viewer">Viewer</option>
-                </select>
+                <Select value={roleFilter || "all"} onValueChange={(value) => setRoleFilter(value === "all" ? "" : value)}>
+                  <SelectTrigger className="w-full rounded-lg">
+                    <SelectValue placeholder="All Roles" />
+                  </SelectTrigger>
+                  <SelectContent className="rounded-xl">
+                    <SelectItem value="all" className="rounded-lg">All Roles</SelectItem>
+                    <SelectItem value="admin" className="rounded-lg">Admin</SelectItem>
+                    <SelectItem value="staff" className="rounded-lg">Staff</SelectItem>
+                    <SelectItem value="mechanic" className="rounded-lg">Mechanic</SelectItem>
+                    <SelectItem value="viewer" className="rounded-lg">Viewer</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
               <button
                 onClick={() => setShowCreateModal(true)}
@@ -349,24 +356,18 @@ export default function UserManagement() {
 
           {/* Footer */}
           <div className="px-4 py-3 border-t border-gray-200 flex flex-col md:flex-row gap-4 items-center justify-between">
-            <div className="flex items-center gap-4">
-              <div className="text-sm text-gray-500">
-                Showing {startIndex + 1}-{Math.min(endIndex, filteredUsers.length)} of {filteredUsers.length} users
-              </div>
-              <div className="flex items-center gap-2">
-                <span className="text-sm text-gray-500">Rows:</span>
-                <Select value={String(itemsPerPage)} onValueChange={(value) => { setItemsPerPage(Number(value)); setCurrentPage(1); }}>
-                  <SelectTrigger className="w-[80px] rounded-lg">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent className="rounded-xl">
-                    <SelectItem value="10" className="rounded-lg">10</SelectItem>
-                    <SelectItem value="25" className="rounded-lg">25</SelectItem>
-                    <SelectItem value="50" className="rounded-lg">50</SelectItem>
-                    <SelectItem value="100" className="rounded-lg">100</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
+            <div className="flex items-center gap-2">
+              <Select value={String(itemsPerPage)} onValueChange={(value) => { setItemsPerPage(Number(value)); setCurrentPage(1); }}>
+                <SelectTrigger className="w-[80px] rounded-lg">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent className="rounded-xl">
+                  <SelectItem value="10" className="rounded-lg">10</SelectItem>
+                  <SelectItem value="25" className="rounded-lg">25</SelectItem>
+                  <SelectItem value="50" className="rounded-lg">50</SelectItem>
+                  <SelectItem value="100" className="rounded-lg">100</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
             <div className="flex items-center gap-2">
               <button

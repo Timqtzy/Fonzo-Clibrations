@@ -1,6 +1,13 @@
 import { useState, useEffect } from 'react';
 import { Plus, Trash2, Package, Calendar, FileText, ShoppingCart, AlertCircle } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { purchaseOrdersApi, suppliersApi, inventoryApi, activityLogsApi } from '@/services/api.service';
 import type { Database } from '@/types/database.types';
 import toast from 'react-hot-toast';
@@ -203,19 +210,19 @@ export function PurchaseOrderModal({ open, onOpenChange, onSuccess }: PurchaseOr
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   Supplier <span className="text-red-500">*</span>
                 </label>
-                <select
-                  value={formData.supplier_id}
-                  onChange={(e) => setFormData({ ...formData, supplier_id: e.target.value })}
-                  className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
-                  required
-                >
-                  <option value="">Select a supplier</option>
-                  {suppliers.map((supplier) => (
-                    <option key={supplier.id} value={supplier.id}>
-                      {supplier.supplier_name}
-                    </option>
-                  ))}
-                </select>
+<Select value={formData.supplier_id || "none"} onValueChange={(value) => setFormData({ ...formData, supplier_id: value === "none" ? "" : value })}>
+                  <SelectTrigger className="w-full rounded-lg">
+                    <SelectValue placeholder="Select a supplier" />
+                  </SelectTrigger>
+                  <SelectContent className="rounded-xl">
+                    <SelectItem value="none" className="rounded-lg">Select a supplier</SelectItem>
+                    {suppliers.map((supplier) => (
+                      <SelectItem key={supplier.id} value={supplier.id} className="rounded-lg">
+                        {supplier.supplier_name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
                 {suppliers.length === 0 && (
                   <p className="text-xs text-amber-600 mt-1">No active suppliers available</p>
                 )}
@@ -268,25 +275,29 @@ export function PurchaseOrderModal({ open, onOpenChange, onSuccess }: PurchaseOr
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     Inventory Item <span className="text-red-500">*</span>
                   </label>
-                  <select
-                    value={currentItem.inventory_item_id}
-                    onChange={(e) => {
-                      const item = inventoryItems.find(i => i.id === e.target.value);
+<Select
+                    value={currentItem.inventory_item_id || "none"}
+                    onValueChange={(value) => {
+                      const item = inventoryItems.find(i => i.id === value);
                       setCurrentItem({
                         ...currentItem,
-                        inventory_item_id: e.target.value,
+                        inventory_item_id: value === "none" ? "" : value,
                         unit_price: item?.unit_price || 0,
                       });
                     }}
-                    className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white transition-all"
                   >
-                    <option value="">Select an item</option>
-                    {inventoryItems.map((item) => (
-                      <option key={item.id} value={item.id}>
-                        {item.parts_name} - ₱{item.unit_price?.toLocaleString()}
-                      </option>
-                    ))}
-                  </select>
+                    <SelectTrigger className="w-full rounded-lg">
+                      <SelectValue placeholder="Select an item" />
+                    </SelectTrigger>
+                    <SelectContent className="rounded-xl">
+                      <SelectItem value="none" className="rounded-lg">Select an item</SelectItem>
+                      {inventoryItems.map((item) => (
+                        <SelectItem key={item.id} value={item.id} className="rounded-lg">
+                          {item.parts_name} - ₱{item.unit_price?.toLocaleString()}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                 </div>
 
                 <div className="md:col-span-2">

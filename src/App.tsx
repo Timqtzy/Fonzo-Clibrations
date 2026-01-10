@@ -5,6 +5,7 @@ import { useAuthChecker } from './hooks/useAuthChecker'
 import type { UserRole } from './types/roles'
 import { roleAccess } from './types/roles'
 import Layout from './components/app/layout'
+import { PageLoader } from './components/ui/loading-spinner'
 
 // Lazy load pages for code splitting
 const Landing = lazy(() => import('./pages/landing'))
@@ -23,17 +24,11 @@ const ActivityLogs = lazy(() => import('./pages/activityLogs'))
 const Settings = lazy(() => import('./pages/settings'))
 const Unauthorized = lazy(() => import('./pages/unauthorized'))
 
-// Loading component
-const PageLoader = () => (
-  <div className="flex items-center justify-center min-h-screen">
-    <div className="text-lg text-gray-600">Loading...</div>
-  </div>
-)
 
 function PrivateRoute({ children, allowedRoles }: { children: React.JSX.Element; allowedRoles?: UserRole[] }) {
   const { isLoading, isAuthenticated, userRole } = useAuthChecker();
 
-  if (isLoading) return <p>Loading...</p>;
+  if (isLoading) return <PageLoader text="Authenticating..." />;
 
   if (!isAuthenticated) return <Navigate to="/login" />;
 
@@ -48,7 +43,7 @@ function PrivateRoute({ children, allowedRoles }: { children: React.JSX.Element;
 function PublicRoute({ children }: { children: React.JSX.Element }) {
   const { isLoading, isAuthenticated } = useAuthChecker();
 
-  if (isLoading) return <p>Loading...</p>;
+  if (isLoading) return <PageLoader text="Loading..." />;
   return isAuthenticated ? <Navigate to="/dashboard" /> : children;
 }
 

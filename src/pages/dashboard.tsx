@@ -74,8 +74,14 @@ export default function Dashboard() {
 
   if (loading) {
     return (
-      <div className="w-full min-h-screen p-6 flex items-center justify-center">
-        <div className="text-lg">Loading dashboard...</div>
+      <div className="w-full min-h-[60vh] p-6 flex items-center justify-center">
+        <div className="flex flex-col items-center gap-4">
+          <div className="relative">
+            <div className="h-12 w-12 rounded-full border-4 border-gray-200"></div>
+            <div className="absolute top-0 left-0 h-12 w-12 rounded-full border-4 border-gray-900 border-t-transparent animate-spin"></div>
+          </div>
+          <p className="text-gray-500 font-medium">Loading dashboard...</p>
+        </div>
       </div>
     );
   }

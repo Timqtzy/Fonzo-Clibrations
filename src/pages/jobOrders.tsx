@@ -171,8 +171,14 @@ export default function CustomerDataTable() {
 
   if (loading) {
     return (
-      <div className="w-full min-h-screen p-6 flex items-center justify-center">
-        <div className="text-lg">Loading job orders...</div>
+      <div className="w-full min-h-[60vh] p-6 flex items-center justify-center">
+        <div className="flex flex-col items-center gap-4">
+          <div className="relative">
+            <div className="h-12 w-12 rounded-full border-4 border-gray-200"></div>
+            <div className="absolute top-0 left-0 h-12 w-12 rounded-full border-4 border-gray-900 border-t-transparent animate-spin"></div>
+          </div>
+          <p className="text-gray-500 font-medium">Loading job orders...</p>
+        </div>
       </div>
     );
   }
@@ -253,25 +259,25 @@ export default function CustomerDataTable() {
                       ₱{(order.total_cost || 0).toLocaleString()}
                     </td>
                     <td className="px-4 py-4 text-sm">
-                      <div className="relative inline-block">
-                        <select
-                          value={order.status}
-                          onChange={(e) => handleStatusChange(order.id, e.target.value)}
-                          className={`appearance-none px-3 py-1.5 pr-8 rounded border ${
-                            order.status === "Completed"
-                              ? "bg-green-50 border-green-200 text-green-700"
-                              : order.status === "In Progress"
-                              ? "bg-blue-50 border-blue-200 text-blue-700"
-                              : "bg-yellow-50 border-yellow-200 text-yellow-700"
-                          } text-sm font-medium focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer`}
-                        >
-                          <option value="Pending">Pending</option>
-                          <option value="In Progress">In Progress</option>
-                          <option value="Completed">Completed</option>
-                          <option value="Cancelled">Cancelled</option>
-                        </select>
-                        <ChevronDown className="absolute right-2 top-1/2 -translate-y-1/2 h-4 w-4 pointer-events-none text-gray-400" />
-                      </div>
+                      <Select value={order.status} onValueChange={(value) => handleStatusChange(order.id, value)}>
+                        <SelectTrigger className={`w-[130px] rounded-lg text-sm font-medium ${
+                          order.status === "Completed"
+                            ? "bg-green-50 border-green-200 text-green-700"
+                            : order.status === "In Progress"
+                            ? "bg-blue-50 border-blue-200 text-blue-700"
+                            : order.status === "Cancelled"
+                            ? "bg-red-50 border-red-200 text-red-700"
+                            : "bg-yellow-50 border-yellow-200 text-yellow-700"
+                        }`}>
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent className="rounded-xl">
+                          <SelectItem value="Pending" className="rounded-lg">Pending</SelectItem>
+                          <SelectItem value="In Progress" className="rounded-lg">In Progress</SelectItem>
+                          <SelectItem value="Completed" className="rounded-lg">Completed</SelectItem>
+                          <SelectItem value="Cancelled" className="rounded-lg">Cancelled</SelectItem>
+                        </SelectContent>
+                      </Select>
                     </td>
                     <td className="px-4 py-4">
                       <div className="flex gap-2 justify-center">
@@ -313,24 +319,18 @@ export default function CustomerDataTable() {
 
         {/* Footer */}
         <div className="px-4 py-3 border-t border-gray-200 flex flex-col md:flex-row gap-4 items-center justify-between">
-          <div className="flex items-center gap-4">
-            <div className="text-sm text-gray-500">
-              Showing {startIndex + 1}-{Math.min(endIndex, filteredData.length)} of {filteredData.length} entries
-            </div>
-            <div className="flex items-center gap-2">
-              <span className="text-sm text-gray-500">Rows:</span>
-              <Select value={String(itemsPerPage)} onValueChange={(value) => { setItemsPerPage(Number(value)); setCurrentPage(1); }}>
-                <SelectTrigger className="w-[80px] rounded-lg">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent className="rounded-xl">
-                  <SelectItem value="10" className="rounded-lg">10</SelectItem>
-                  <SelectItem value="25" className="rounded-lg">25</SelectItem>
-                  <SelectItem value="50" className="rounded-lg">50</SelectItem>
-                  <SelectItem value="100" className="rounded-lg">100</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
+          <div className="flex items-center gap-2">
+            <Select value={String(itemsPerPage)} onValueChange={(value) => { setItemsPerPage(Number(value)); setCurrentPage(1); }}>
+              <SelectTrigger className="w-[80px] rounded-lg">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent className="rounded-xl">
+                <SelectItem value="10" className="rounded-lg">10</SelectItem>
+                <SelectItem value="25" className="rounded-lg">25</SelectItem>
+                <SelectItem value="50" className="rounded-lg">50</SelectItem>
+                <SelectItem value="100" className="rounded-lg">100</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
           <div className="flex items-center gap-4">
             <div className="text-sm font-semibold text-gray-900">

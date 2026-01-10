@@ -1,5 +1,12 @@
 import { useState, useEffect } from 'react';
 import { Dialog, DialogContent, DialogBody, DialogFooter } from '@/components/ui/dialog';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { profilesApi } from '@/services/api.service';
 import type { Database } from '@/types/database.types';
 import toast from 'react-hot-toast';
@@ -244,17 +251,17 @@ export function UserFormModal({ open, onOpenChange, onSuccess, user }: UserFormM
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     Role <span className="text-red-500">*</span>
                   </label>
-                  <select
-                    required
-                    value={formData.role}
-                    onChange={(e) => setFormData({ ...formData, role: e.target.value as 'admin' | 'staff' | 'mechanic' | 'viewer' })}
-                    className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 hover:border-gray-400"
-                  >
-                    <option value="admin">Admin - Full system access</option>
-                    <option value="staff">Staff - Manage customers and orders</option>
-                    <option value="mechanic">Mechanic - View and update work assignments</option>
-                    <option value="viewer">Viewer - Read-only access</option>
-                  </select>
+<Select value={formData.role} onValueChange={(value) => setFormData({ ...formData, role: value as 'admin' | 'staff' | 'mechanic' | 'viewer' })}>
+                    <SelectTrigger className="w-full rounded-lg">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent className="rounded-xl">
+                      <SelectItem value="admin" className="rounded-lg">Admin - Full system access</SelectItem>
+                      <SelectItem value="staff" className="rounded-lg">Staff - Manage customers and orders</SelectItem>
+                      <SelectItem value="mechanic" className="rounded-lg">Mechanic - View and update work assignments</SelectItem>
+                      <SelectItem value="viewer" className="rounded-lg">Viewer - Read-only access</SelectItem>
+                    </SelectContent>
+                  </Select>
                   <p className="mt-1.5 text-xs text-gray-500">
                     {formData.role === 'admin' && 'Full access to all features including user management'}
                     {formData.role === 'staff' && 'Can manage customers, job orders, and appointments'}

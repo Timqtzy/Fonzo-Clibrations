@@ -1,5 +1,12 @@
 import { useState, useEffect } from 'react';
 import { Dialog, DialogContent, DialogBody, DialogFooter } from '@/components/ui/dialog';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { suppliersApi } from '@/services/api.service';
 import type { Database } from '@/types/database.types';
 import toast from 'react-hot-toast';
@@ -158,15 +165,16 @@ export function SupplierFormModal({ open, onOpenChange, onSuccess, supplier }: S
               <div className="pl-6">
                 <div className="group">
                   <label className="block text-sm font-medium text-gray-700 mb-2">Status</label>
-                  <select
-                    value={formData.status}
-                    onChange={(e) => setFormData({ ...formData, status: e.target.value })}
-                    className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 hover:border-gray-400"
-                  >
-                    <option value="Active">Active</option>
-                    <option value="Inactive">Inactive</option>
-                    <option value="Pending">Pending</option>
-                  </select>
+<Select value={formData.status} onValueChange={(value) => setFormData({ ...formData, status: value })}>
+                    <SelectTrigger className="w-full rounded-lg">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent className="rounded-xl">
+                      <SelectItem value="Active" className="rounded-lg">Active</SelectItem>
+                      <SelectItem value="Inactive" className="rounded-lg">Inactive</SelectItem>
+                      <SelectItem value="Pending" className="rounded-lg">Pending</SelectItem>
+                    </SelectContent>
+                  </Select>
                 </div>
               </div>
             </div>

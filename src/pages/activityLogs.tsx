@@ -179,8 +179,14 @@ export default function ActivityLogs() {
 
   if (loading) {
     return (
-      <div className="w-full min-h-screen p-6 flex items-center justify-center">
-        <div className="text-lg">Loading activity logs...</div>
+      <div className="w-full min-h-[60vh] p-6 flex items-center justify-center">
+        <div className="flex flex-col items-center gap-4">
+          <div className="relative">
+            <div className="h-12 w-12 rounded-full border-4 border-gray-200"></div>
+            <div className="absolute top-0 left-0 h-12 w-12 rounded-full border-4 border-gray-900 border-t-transparent animate-spin"></div>
+          </div>
+          <p className="text-gray-500 font-medium">Loading activity logs...</p>
+        </div>
       </div>
     );
   }
@@ -256,9 +262,9 @@ export default function ActivityLogs() {
 
         {/* Filters */}
         <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 mb-6">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+          <div className="flex flex-wrap items-center gap-3">
             {/* Search */}
-            <div className="relative">
+            <div className="relative flex-1 min-w-[200px]">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
               <input
                 type="text"
@@ -269,54 +275,62 @@ export default function ActivityLogs() {
               />
             </div>
 
-            {/* Action Filter */}
-            <div className="relative">
-              <Filter className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
-              <select
-                value={filterAction}
-                onChange={(e) => setFilterAction(e.target.value)}
-                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
-              >
-                <option value="all">All Actions</option>
-                <option value="create">Create</option>
-                <option value="update">Update</option>
-                <option value="delete">Delete</option>
-                <option value="view">View</option>
-              </select>
-            </div>
+            {/* Filter Group - aligned to right */}
+            <div className="flex flex-wrap items-center gap-3 ml-auto">
+              <div className="h-8 w-px bg-gray-200 hidden sm:block" />
 
-            {/* Entity Type Filter */}
-            <div className="relative">
-              <Tag className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
-              <select
-                value={filterEntityType}
-                onChange={(e) => setFilterEntityType(e.target.value)}
-                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
-              >
-                <option value="all">All Types</option>
-                {entityTypes.map((type) => (
-                  <option key={type} value={type}>
-                    {type.replace('_', ' ').toUpperCase()}
-                  </option>
-                ))}
-              </select>
-            </div>
+              {/* Action Filter */}
+              <div className="flex items-center gap-2">
+                <Filter className="h-4 w-4 text-gray-400 shrink-0" />
+                <Select value={filterAction} onValueChange={setFilterAction}>
+                  <SelectTrigger className="w-[130px] rounded-lg">
+                    <SelectValue placeholder="All Actions" />
+                  </SelectTrigger>
+                  <SelectContent className="rounded-xl">
+                    <SelectItem value="all" className="rounded-lg">All Actions</SelectItem>
+                    <SelectItem value="create" className="rounded-lg">Create</SelectItem>
+                    <SelectItem value="update" className="rounded-lg">Update</SelectItem>
+                    <SelectItem value="delete" className="rounded-lg">Delete</SelectItem>
+                    <SelectItem value="view" className="rounded-lg">View</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
 
-            {/* Role Filter */}
-            <div className="relative">
-              <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
-              <select
-                value={filterRole}
-                onChange={(e) => setFilterRole(e.target.value)}
-                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
-              >
-                <option value="all">All Roles</option>
-                {roles.map((role) => (
-                  <option key={role} value={role!}>
-                    {role!.toUpperCase()}
-                  </option>
-                ))}
-              </select>
+              {/* Entity Type Filter */}
+              <div className="flex items-center gap-2">
+                <Tag className="h-4 w-4 text-gray-400 shrink-0" />
+                <Select value={filterEntityType} onValueChange={setFilterEntityType}>
+                  <SelectTrigger className="w-[140px] rounded-lg">
+                    <SelectValue placeholder="All Types" />
+                  </SelectTrigger>
+                  <SelectContent className="rounded-xl">
+                    <SelectItem value="all" className="rounded-lg">All Types</SelectItem>
+                    {entityTypes.map((type) => (
+                      <SelectItem key={type} value={type} className="rounded-lg">
+                        {type.replace('_', ' ').toUpperCase()}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              {/* Role Filter */}
+              <div className="flex items-center gap-2">
+                <User className="h-4 w-4 text-gray-400 shrink-0" />
+                <Select value={filterRole} onValueChange={setFilterRole}>
+                  <SelectTrigger className="w-[130px] rounded-lg">
+                    <SelectValue placeholder="All Roles" />
+                  </SelectTrigger>
+                  <SelectContent className="rounded-xl">
+                    <SelectItem value="all" className="rounded-lg">All Roles</SelectItem>
+                    {roles.map((role) => (
+                      <SelectItem key={role} value={role!} className="rounded-lg">
+                        {role!.toUpperCase()}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
             </div>
           </div>
         </div>
@@ -381,24 +395,18 @@ export default function ActivityLogs() {
           {/* Pagination */}
           {filteredLogs.length > 0 && (
             <div className="px-4 py-3 border-t border-gray-200 flex items-center justify-between">
-              <div className="flex items-center gap-4">
-                <div className="text-sm text-gray-500">
-                  Showing {startIndex + 1}-{Math.min(endIndex, filteredLogs.length)} of {filteredLogs.length}
-                </div>
-                <div className="flex items-center gap-2">
-                  <span className="text-sm text-gray-500">Rows per page:</span>
-                  <Select value={String(itemsPerPage)} onValueChange={(value) => { setItemsPerPage(Number(value)); setCurrentPage(1); }}>
-                    <SelectTrigger className="w-[80px] rounded-lg">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent className="rounded-xl">
-                      <SelectItem value="10" className="rounded-lg">10</SelectItem>
-                      <SelectItem value="25" className="rounded-lg">25</SelectItem>
-                      <SelectItem value="50" className="rounded-lg">50</SelectItem>
-                      <SelectItem value="100" className="rounded-lg">100</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
+              <div className="flex items-center gap-2">
+                <Select value={String(itemsPerPage)} onValueChange={(value) => { setItemsPerPage(Number(value)); setCurrentPage(1); }}>
+                  <SelectTrigger className="w-[80px] rounded-lg">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent className="rounded-xl">
+                    <SelectItem value="10" className="rounded-lg">10</SelectItem>
+                    <SelectItem value="25" className="rounded-lg">25</SelectItem>
+                    <SelectItem value="50" className="rounded-lg">50</SelectItem>
+                    <SelectItem value="100" className="rounded-lg">100</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
               <div className="flex items-center gap-2">
                 <button

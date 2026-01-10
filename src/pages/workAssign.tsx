@@ -149,8 +149,14 @@ export default function WorkAssignment() {
 
   if (loading) {
     return (
-      <div className="w-full min-h-screen p-6 flex items-center justify-center">
-        <div className="text-lg">Loading work assignments...</div>
+      <div className="w-full min-h-[60vh] p-6 flex items-center justify-center">
+        <div className="flex flex-col items-center gap-4">
+          <div className="relative">
+            <div className="h-12 w-12 rounded-full border-4 border-gray-200"></div>
+            <div className="absolute top-0 left-0 h-12 w-12 rounded-full border-4 border-gray-900 border-t-transparent animate-spin"></div>
+          </div>
+          <p className="text-gray-500 font-medium">Loading work assignments...</p>
+        </div>
       </div>
     );
   }
@@ -218,23 +224,30 @@ export default function WorkAssignment() {
                         {item.deadline ? new Date(item.deadline).toLocaleDateString() : 'N/A'}
                       </td>
                       <td className="px-4 py-4 text-sm">
-                        <div className="relative inline-block min-w-[140px]">
-                          <select
-                            value={item.status}
-                            onChange={(e) => {
-                              e.stopPropagation();
-                              handleStatusChange(item.id, e.target.value);
-                            }}
-                            className="appearance-none w-full px-3 py-1.5 pr-8 rounded border border-gray-300 bg-white text-gray-900 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer"
-                          >
-                            <option value="Diagnosing">Diagnosing</option>
-                            <option value="In Progress">In Progress</option>
-                            <option value="On Hold">On Hold</option>
-                            <option value="Completed">Completed</option>
-                            <option value="Cancelled">Cancelled</option>
-                          </select>
-                          <ChevronDown className="absolute right-2 top-1/2 -translate-y-1/2 h-4 w-4 pointer-events-none text-gray-400" />
-                        </div>
+                        <Select value={item.status} onValueChange={(value) => handleStatusChange(item.id, value)}>
+                          <SelectTrigger className={`w-[140px] rounded-lg text-sm font-medium ${
+                            item.status === "Completed"
+                              ? "bg-green-50 border-green-200 text-green-700"
+                              : item.status === "In Progress"
+                              ? "bg-blue-50 border-blue-200 text-blue-700"
+                              : item.status === "Diagnosing"
+                              ? "bg-purple-50 border-purple-200 text-purple-700"
+                              : item.status === "On Hold"
+                              ? "bg-orange-50 border-orange-200 text-orange-700"
+                              : item.status === "Cancelled"
+                              ? "bg-red-50 border-red-200 text-red-700"
+                              : "bg-gray-50 border-gray-200 text-gray-700"
+                          }`}>
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent className="rounded-xl">
+                            <SelectItem value="Diagnosing" className="rounded-lg">Diagnosing</SelectItem>
+                            <SelectItem value="In Progress" className="rounded-lg">In Progress</SelectItem>
+                            <SelectItem value="On Hold" className="rounded-lg">On Hold</SelectItem>
+                            <SelectItem value="Completed" className="rounded-lg">Completed</SelectItem>
+                            <SelectItem value="Cancelled" className="rounded-lg">Cancelled</SelectItem>
+                          </SelectContent>
+                        </Select>
                       </td>
                       <td className="px-4 py-4">
                         <div className="flex gap-2 justify-center">
