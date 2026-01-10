@@ -2,6 +2,8 @@ import './App.css'
 import React, { Suspense, lazy } from 'react'
 import { Routes, Route, Navigate } from 'react-router-dom'
 import { useAuthChecker } from './hooks/useAuthChecker'
+import type { UserRole } from './types/roles'
+import { roleAccess } from './types/roles'
 import Layout from './components/app/layout'
 
 // Lazy load pages for code splitting
@@ -19,6 +21,7 @@ const Customers = lazy(() => import('./pages/customers'))
 const UserManagement = lazy(() => import('./pages/userManagement'))
 const ActivityLogs = lazy(() => import('./pages/activityLogs'))
 const Settings = lazy(() => import('./pages/settings'))
+const Unauthorized = lazy(() => import('./pages/unauthorized'))
 
 // Loading component
 const PageLoader = () => (
@@ -27,11 +30,19 @@ const PageLoader = () => (
   </div>
 )
 
-function PrivateRoute({ children }: { children: React.JSX.Element }) {
-  const { isLoading, isAuthenticated } = useAuthChecker();
+function PrivateRoute({ children, allowedRoles }: { children: React.JSX.Element; allowedRoles?: UserRole[] }) {
+  const { isLoading, isAuthenticated, userRole } = useAuthChecker();
 
   if (isLoading) return <p>Loading...</p>;
-  return isAuthenticated ? <Layout>{children}</Layout> : <Navigate to="/login" />;
+
+  if (!isAuthenticated) return <Navigate to="/login" />;
+
+  // If specific roles are required, check if user has permission
+  if (allowedRoles && userRole && !allowedRoles.includes(userRole)) {
+    return <Navigate to="/unauthorized" />;
+  }
+
+  return <Layout>{children}</Layout>;
 }
 
 function PublicRoute({ children }: { children: React.JSX.Element }) {
@@ -62,7 +73,7 @@ function App() {
         <Route
           path="/dashboard"
           element={
-            <PrivateRoute>
+            <PrivateRoute allowedRoles={roleAccess['/dashboard']}>
               <Dashboard />
             </PrivateRoute>
           }
@@ -70,63 +81,63 @@ function App() {
         <Route
           path="/job-orders"
           element={
-            <PrivateRoute>
+            <PrivateRoute allowedRoles={roleAccess['/job-orders']}>
               <JobOrders />
             </PrivateRoute>
           }
         />
-             <Route
+        <Route
           path="/work-assign"
           element={
-            <PrivateRoute>
+            <PrivateRoute allowedRoles={roleAccess['/work-assign']}>
               <WorkAssign />
             </PrivateRoute>
           }
         />
-             <Route
+        <Route
           path="/inventory-supplies"
           element={
-            <PrivateRoute>
+            <PrivateRoute allowedRoles={roleAccess['/inventory-supplies']}>
               <InventorySupplies />
             </PrivateRoute>
           }
         />
-             <Route
+        <Route
           path="/suppliers"
           element={
-            <PrivateRoute>
+            <PrivateRoute allowedRoles={roleAccess['/suppliers']}>
               <Suppliers />
             </PrivateRoute>
           }
         />
-             <Route
+        <Route
           path="/mechanics"
           element={
-            <PrivateRoute>
+            <PrivateRoute allowedRoles={roleAccess['/mechanics']}>
               <Mechanics />
             </PrivateRoute>
           }
         />
-             <Route
+        <Route
           path="/appointment-scheduling"
           element={
-            <PrivateRoute>
+            <PrivateRoute allowedRoles={roleAccess['/appointment-scheduling']}>
               <AppointmentScheduling />
             </PrivateRoute>
           }
         />
-             <Route
+        <Route
           path="/customers"
           element={
-            <PrivateRoute>
+            <PrivateRoute allowedRoles={roleAccess['/customers']}>
               <Customers />
             </PrivateRoute>
           }
         />
-             <Route
+        <Route
           path="/user-management"
           element={
-            <PrivateRoute>
+            <PrivateRoute allowedRoles={roleAccess['/user-management']}>
               <UserManagement />
             </PrivateRoute>
           }
@@ -134,7 +145,7 @@ function App() {
         <Route
           path="/activity-logs"
           element={
-            <PrivateRoute>
+            <PrivateRoute allowedRoles={roleAccess['/activity-logs']}>
               <ActivityLogs />
             </PrivateRoute>
           }
@@ -142,8 +153,16 @@ function App() {
         <Route
           path="/settings"
           element={
-            <PrivateRoute>
+            <PrivateRoute allowedRoles={roleAccess['/settings']}>
               <Settings />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/unauthorized"
+          element={
+            <PrivateRoute>
+              <Unauthorized />
             </PrivateRoute>
           }
         />

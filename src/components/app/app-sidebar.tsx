@@ -27,6 +27,8 @@ import {
 import { useNavigate, useLocation } from "react-router-dom";
 import Logo from "../../assets/fonzoLogo.jpg";
 import supabase from "@/helper/supabaseClient";
+import { useAuthChecker } from "@/hooks/useAuthChecker";
+import { roleAccess } from "@/types/roles";
 
 const navigationItems = [
   {
@@ -89,6 +91,14 @@ const navigationItems = [
 export default function AppSidebar() {
   const navigate = useNavigate();
   const location = useLocation();
+  const { userRole } = useAuthChecker();
+
+  // Filter navigation items based on user role
+  const filteredNavItems = navigationItems.filter((item) => {
+    const allowedRoles = roleAccess[item.url];
+    if (!allowedRoles || !userRole) return false;
+    return allowedRoles.includes(userRole);
+  });
 
   const handleLogout = async () => {
     const { error } = await supabase.auth.signOut();
@@ -117,7 +127,7 @@ export default function AppSidebar() {
           <SidebarGroupLabel>Navigation</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
-              {navigationItems.map((item) => (
+              {filteredNavItems.map((item) => (
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton
                     onClick={() => navigate(item.url)}
