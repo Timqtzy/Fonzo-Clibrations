@@ -29,7 +29,6 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { activityLogsApi } from '@/services/api.service';
-import { useAuthChecker } from '@/hooks/useAuthChecker';
 import toast from 'react-hot-toast';
 
 type ActivityLog = {
@@ -48,7 +47,6 @@ type ActivityLog = {
 };
 
 export default function ActivityLogs() {
-  const { isAuthenticated } = useAuthChecker();
   const [logs, setLogs] = useState<ActivityLog[]>([]);
   const [filteredLogs, setFilteredLogs] = useState<ActivityLog[]>([]);
   const [loading, setLoading] = useState(true);
@@ -60,10 +58,8 @@ export default function ActivityLogs() {
   const [itemsPerPage, setItemsPerPage] = useState(10);
 
   useEffect(() => {
-    if (isAuthenticated) {
-      loadActivityLogs();
-    }
-  }, [isAuthenticated]);
+    loadActivityLogs();
+  }, []);
 
   const applyFilters = useCallback(() => {
     let filtered = [...logs];
@@ -174,8 +170,6 @@ export default function ActivityLogs() {
   const startIndex = (currentPage - 1) * itemsPerPage;
   const endIndex = startIndex + itemsPerPage;
   const currentLogs = filteredLogs.slice(startIndex, endIndex);
-
-  if (!isAuthenticated) return null;
 
   if (loading) {
     return (

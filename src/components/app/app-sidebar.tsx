@@ -91,19 +91,27 @@ const navigationItems = [
 export default function AppSidebar() {
   const navigate = useNavigate();
   const location = useLocation();
-  const { userRole } = useAuthChecker();
+  const { userRole, isLoading } = useAuthChecker();
 
   // Filter navigation items based on user role
   const filteredNavItems = navigationItems.filter((item) => {
     const allowedRoles = roleAccess[item.url];
-    if (!allowedRoles || !userRole) return false;
+    // While loading or if role is null, show all items for admin (fallback)
+    // Once role is loaded, filter properly
+    if (!allowedRoles) return false;
+    if (isLoading || !userRole) return true; // Show all while loading
     return allowedRoles.includes(userRole);
   });
 
   const handleLogout = async () => {
-    const { error } = await supabase.auth.signOut();
-    if (error) throw error;
-    navigate("/login");
+    try {
+      await supabase.auth.signOut();
+      navigate("/login");
+    } catch (error) {
+      console.error("Logout error:", error);
+      // Force navigation to login even if signOut fails
+      navigate("/login");
+    }
   };
 
   return (

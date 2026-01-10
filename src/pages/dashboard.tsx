@@ -1,5 +1,4 @@
 import { useState, useEffect } from "react";
-import { useAuthChecker } from "@/hooks/useAuthChecker";
 import { ChartAreaInteractive } from "../components/charts/areaChart";
 import { ChartBarInteractive } from "../components/charts/barChart";
 import { jobOrdersApi, customersApi, appointmentsApi, inventoryApi, mechanicsApi } from "@/services/api.service";
@@ -7,7 +6,6 @@ import { Users, Wrench, Calendar, TrendingUp, AlertTriangle, UserCog, ClipboardL
 import toast from "react-hot-toast";
 
 export default function Dashboard() {
-  const { isAuthenticated } = useAuthChecker();
   const [loading, setLoading] = useState(true);
   const [stats, setStats] = useState({
     totalCustomers: 0,
@@ -23,10 +21,8 @@ export default function Dashboard() {
   });
 
   useEffect(() => {
-    if (isAuthenticated) {
-      loadDashboardData();
-    }
-  }, [isAuthenticated]);
+    loadDashboardData();
+  }, []);
 
   const loadDashboardData = async () => {
     try {
@@ -69,8 +65,6 @@ export default function Dashboard() {
       setLoading(false);
     }
   };
-
-  if (!isAuthenticated) return null;
 
   if (loading) {
     return (

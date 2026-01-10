@@ -1,4 +1,3 @@
-import { useAuthChecker } from "@/hooks/useAuthChecker";
 import { useState, useEffect } from "react";
 import { Label } from "@radix-ui/react-label";
 import { Input } from "@/components/ui/input";
@@ -28,7 +27,6 @@ import {
 type SettingsTab = "general" | "account" | "notifications" | "data";
 
 export default function Settings() {
-  const { isAuthenticated } = useAuthChecker();
   const [activeTab, setActiveTab] = useState<SettingsTab>("general");
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -58,11 +56,9 @@ export default function Settings() {
   const [exporting, setExporting] = useState(false);
 
   useEffect(() => {
-    if (isAuthenticated) {
-      loadSettings();
-      loadCurrentUser();
-    }
-  }, [isAuthenticated]);
+    loadSettings();
+    loadCurrentUser();
+  }, []);
 
   const loadSettings = async () => {
     try {
@@ -221,8 +217,6 @@ export default function Settings() {
       setExporting(false);
     }
   };
-
-  if (!isAuthenticated) return null;
 
   if (loading) {
     return (

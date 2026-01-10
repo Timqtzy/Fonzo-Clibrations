@@ -8,6 +8,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { profilesApi } from '@/services/api.service';
+import supabase from '@/helper/supabaseClient';
 import type { Database } from '@/types/database.types';
 import toast from 'react-hot-toast';
 import { UserFormModal } from '@/components/modals/UserFormModal';
@@ -24,6 +25,7 @@ export default function UserManagement() {
   const [searchQuery, setSearchQuery] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
+  const [currentUserId, setCurrentUserId] = useState<string | null>(null);
 
   // Modal states
   const [showCreateModal, setShowCreateModal] = useState(false);
@@ -36,7 +38,13 @@ export default function UserManagement() {
 
   useEffect(() => {
     loadUsers();
+    getCurrentUser();
   }, []);
+
+  const getCurrentUser = async () => {
+    const { data: { user } } = await supabase.auth.getUser();
+    setCurrentUserId(user?.id || null);
+  };
 
   const loadUsers = async () => {
     try {
@@ -67,6 +75,25 @@ export default function UserManagement() {
   };
 
   const handleDeleteClick = (user: Profile) => {
+    // Safety check 1: Cannot delete yourself
+    if (user.id === currentUserId) {
+      toast.error('You cannot delete your own account');
+      return;
+    }
+
+    // Safety check 2: Cannot delete if only 1 user left
+    if (users.length <= 1) {
+      toast.error('Cannot delete the last remaining user');
+      return;
+    }
+
+    // Safety check 3: Cannot delete the last admin
+    const adminCount = users.filter(u => u.role === 'admin').length;
+    if (user.role === 'admin' && adminCount <= 1) {
+      toast.error('Cannot delete the last admin account');
+      return;
+    }
+
     setSelectedUser(user);
     setShowDeleteModal(true);
   };
@@ -334,10 +361,15 @@ export default function UserManagement() {
                           </button>
                           <button
                             onClick={() => handleDeleteClick(user)}
-                            className="p-2 rounded bg-red-100 hover:bg-red-200 transition-colors"
-                            title="Delete User"
+                            className={`p-2 rounded transition-colors ${
+                              user.id === currentUserId
+                                ? 'bg-gray-100 cursor-not-allowed opacity-50'
+                                : 'bg-red-100 hover:bg-red-200'
+                            }`}
+                            title={user.id === currentUserId ? "Cannot delete your own account" : "Delete User"}
+                            disabled={user.id === currentUserId}
                           >
-                            <Trash2 className="h-4 w-4 text-red-600" />
+                            <Trash2 className={`h-4 w-4 ${user.id === currentUserId ? 'text-gray-400' : 'text-red-600'}`} />
                           </button>
                         </div>
                       </td>
